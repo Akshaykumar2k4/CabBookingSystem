@@ -34,7 +34,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable()) // Disable CSRF for APIs
                 .authorizeHttpRequests(auth -> auth
                         // Allow these specific endpoints without a token
-                        .requestMatchers("/api/users/register", "/api/users/login", "/h2-console/**").permitAll()
+                        .requestMatchers("/api/users/register", "/api/users/login", "/api/drivers/register").permitAll()
                         // All other requests need a token (Authentication)
                         .anyRequest().authenticated()
                 )

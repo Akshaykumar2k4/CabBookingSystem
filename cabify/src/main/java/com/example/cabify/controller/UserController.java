@@ -31,7 +31,7 @@ public class UserController {
     private JwtUtil jwtUtil;
 
     @PostMapping("register")
-    public ResponseEntity<SuccessResponse<UserProfileDto>> registerUser(@RequestBody User user) {
+        public ResponseEntity<SuccessResponse<UserProfileDto>> registerUser(@RequestBody User user) {
         UserProfileDto userProfile = userService.registerUser(user);
         SuccessResponse<UserProfileDto> response = new SuccessResponse<>(
                 "User successfully created!",
