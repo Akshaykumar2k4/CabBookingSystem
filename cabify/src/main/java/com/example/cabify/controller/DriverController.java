@@ -18,7 +18,7 @@ public class DriverController {
     @Autowired
     private IDriverService driverService;
 
-    // 1. Register a Driver (Matches UserController style)
+    // 1. Register a Driver
     @PostMapping("register")
     public ResponseEntity<SuccessResponse<DriverDto>> registerDriver(@RequestBody Driver driver) {
         DriverDto registeredDriver = driverService.registerDriver(driver);
@@ -31,24 +31,42 @@ public class DriverController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    // 2. Get Available Drivers (Used by Customers)
+    // 2. Get Available Drivers (UPDATED)
     @GetMapping("available")
-    public ResponseEntity<List<DriverDto>> getAvailableDrivers() {
+    public ResponseEntity<SuccessResponse<List<DriverDto>>> getAvailableDrivers() {
         List<DriverDto> drivers = driverService.getAvailableDrivers();
-        return new ResponseEntity<>(drivers, HttpStatus.OK);
+
+        SuccessResponse<List<DriverDto>> response = new SuccessResponse<>(
+                "Available drivers fetched successfully", // Descriptive message
+                HttpStatus.OK.value(),
+                drivers
+        );
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    // 3. Update Driver Status (e.g., PUT /api/drivers/status/1?status=AVAILABLE)
+    // 3. Update Driver Status (UPDATED)
     @PutMapping("status/{id}")
-    public ResponseEntity<DriverDto> updateDriverStatus(@PathVariable Long id, @RequestParam String status) {
+    public ResponseEntity<SuccessResponse<DriverDto>> updateDriverStatus(@PathVariable Long id, @RequestParam String status) {
         DriverDto updatedDriver = driverService.updateDriverStatus(id, status);
-        return new ResponseEntity<>(updatedDriver, HttpStatus.OK);
+
+        SuccessResponse<DriverDto> response = new SuccessResponse<>(
+                "Driver status updated to " + status,
+                HttpStatus.OK.value(),
+                updatedDriver
+        );
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    // 4. Get Driver Profile
+    // 4. Get Driver Profile (UPDATED)
     @GetMapping("{id}")
-    public ResponseEntity<DriverDto> getDriverById(@PathVariable Long id) {
+    public ResponseEntity<SuccessResponse<DriverDto>> getDriverById(@PathVariable Long id) {
         DriverDto driver = driverService.getDriverById(id);
-        return new ResponseEntity<>(driver, HttpStatus.OK);
+
+        SuccessResponse<DriverDto> response = new SuccessResponse<>(
+                "Driver details fetched successfully",
+                HttpStatus.OK.value(),
+                driver
+        );
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }
