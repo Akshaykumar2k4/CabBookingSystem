@@ -2,6 +2,7 @@ package com.example.cabify.service;
 
 import com.example.cabify.dto.ride.RideRequestDto;
 import com.example.cabify.dto.ride.RideResponseDto;
+import com.example.cabify.exception.ResourceNotFoundException; // Import this
 import com.example.cabify.model.*;
 import com.example.cabify.repository.DriverRepository;
 import com.example.cabify.repository.RideRepository;
@@ -27,24 +28,23 @@ public class RideService implements IRideService {
     @Autowired
     private DriverRepository driverRepository;
 
-    // --- 1. BOOK A RIDE ---
     @Override
-    @Transactional // CRITICAL: Ensures Ride is saved AND Driver is locked together
+    @Transactional
     public RideResponseDto bookRide(RideRequestDto request) {
-        // 1. Fetch User
+        // 1. Fetch User (Throw 404 if not found)
         User user = userRepository.findById(request.getUserId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + request.getUserId()));
 
-        // 2. Fetch Driver
+        // 2. Fetch Driver (Throw 404 if not found)
         Driver driver = driverRepository.findById(request.getDriverId())
-                .orElseThrow(() -> new RuntimeException("Driver not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Driver not found with ID: " + request.getDriverId()));
 
-        // 3. LOGIC CHECK: Is the driver actually free?
-        if (driver.getStatus()!=DriverStatus.AVAILABLE) {
-            throw new RuntimeException("Driver is not available!");
+        // 3. LOGIC CHECK: Is the driver actually free? (Throw 409 CONFLICT if busy)
+        if (driver.getStatus() != DriverStatus.AVAILABLE) {
+            throw new IllegalStateException("Driver is currently " + driver.getStatus() + " and cannot accept rides.");
         }
 
-        // 4. Calculate Fare (System Logic)
+        // 4. Calculate Fare
         Double calculatedFare = calculateFare();
 
         // 5. Create and Save Ride
@@ -59,32 +59,31 @@ public class RideService implements IRideService {
 
         Ride savedRide = rideRepository.save(ride);
 
-        // 6. LOCK THE DRIVER
+        // 6. Lock the Driver
         driver.setStatus(DriverStatus.BUSY);
         driverRepository.save(driver);
 
         return mapToDto(savedRide);
     }
 
-    // --- 2. END A RIDE ---
     @Override
-    @Transactional // CRITICAL: Updates both Ride table and Driver table
+    @Transactional
     public RideResponseDto endRide(Long rideId) {
-        // 1. Find the ride
+        // 1. Find Ride (Throw 404 if not found)
         Ride ride = rideRepository.findById(rideId)
-                .orElseThrow(() -> new RuntimeException("Ride not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Ride not found with ID: " + rideId));
 
-        // 2. Validate: Can't end a ride that's already done
+        // 2. Validate Status (Throw 409 CONFLICT if already done)
         if (ride.getStatus() == RideStatus.COMPLETED) {
-            throw new RuntimeException("Ride is already completed!");
+            throw new IllegalStateException("Ride is already completed!");
         }
 
-        // 3. Update Ride Status
+        // 3. Update Status
         ride.setStatus(RideStatus.COMPLETED);
         ride.setEndTime(LocalDateTime.now());
         rideRepository.save(ride);
 
-        // 4. UNLOCK THE DRIVER (Make them available again)
+        // 4. Unlock the Driver
         Driver driver = ride.getDriver();
         driver.setStatus(DriverStatus.AVAILABLE);
         driverRepository.save(driver);
@@ -92,26 +91,22 @@ public class RideService implements IRideService {
         return mapToDto(ride);
     }
 
-    // --- 3. GET RIDE HISTORY ---
     @Override
-    public List<RideResponseDto> getMyRides(long userId) {
-        // 1. Find the User (to ensure they exist)
-        User user = userRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+    public List<RideResponseDto> getMyRides(Long userId) {
+        // 1. Validate User exists first
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + userId));
 
-        // 2. Fetch all rides for this user from DB
         List<Ride> rides = rideRepository.findByUser(user);
 
-        // 3. Convert the list of Entities -> List of DTOs
         return rides.stream()
                 .map(this::mapToDto)
                 .collect(Collectors.toList());
     }
 
-    // --- HELPER METHODS ---
+    // --- Helpers ---
 
     private Double calculateFare() {
-        // Random price between 100 and 500
         return 100 + (400 * new Random().nextDouble());
     }
 
@@ -123,7 +118,7 @@ public class RideService implements IRideService {
         dto.setSource(ride.getSource());
         dto.setDestination(ride.getDestination());
         dto.setStatus(ride.getStatus());
-        dto.setFare(Math.round(ride.getFare() * 100.0) / 100.0); // Round to 2 decimals
+        dto.setFare(Math.round(ride.getFare() * 100.0) / 100.0);
         dto.setBookingTime(ride.getStartTime());
         return dto;
     }
