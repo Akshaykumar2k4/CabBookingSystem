@@ -5,7 +5,7 @@ import com.example.cabify.dto.user.UserProfileDto;
 import com.example.cabify.model.User;
 import com.example.cabify.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder; // Change Importimport org.springframework.stereotype.Service;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,14 +16,13 @@ import java.util.stream.Collectors;
 public class UserService {
 
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-
     public UserProfileDto registerUser(User user) {
-
+        // 1. Validation Logic
         if (user.getName() == null || user.getEmail() == null || user.getPassword() == null) {
             throw new IllegalArgumentException("Name, Email, and Password cannot be empty");
         }
@@ -50,61 +49,52 @@ public class UserService {
             throw new IllegalStateException("Email is already registered!");
         }
 
-        String hashedPassword = passwordEncoder.encode(password);
-        user.setPassword(hashedPassword);
+        // 2. Data Persistence
+        user.setPassword(passwordEncoder.encode(password));
         user.setName(name);
         user.setEmail(email);
+
         User savedUser = userRepository.save(user);
 
-        return new UserProfileDto(
-                savedUser.getUserId(),
-                savedUser.getName(),
-                savedUser.getEmail(),
-                savedUser.getPhone()
-        );
-
+        // 3. Return using helper method
+        return mapToDto(savedUser);
     }
 
     public UserProfileDto getUserById(long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("User not found with ID: " + id));
-
-        return new UserProfileDto(
-                user.getUserId(),
-                user.getName(),
-                user.getEmail(),
-                user.getPhone()
-        );
+        return mapToDto(user);
     }
 
     public UserProfileDto userLogin(LoginRequestDto loginRequestDto) {
         User user = userRepository.findByEmail(loginRequestDto.getEmail())
                 .orElseThrow(() -> new NoSuchElementException("User not found"));
 
-       if(!passwordEncoder.matches(loginRequestDto.getPassword(), user.getPassword())){
-           throw new IllegalArgumentException("Invalid email or password");
-       }
+        if (!passwordEncoder.matches(loginRequestDto.getPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("Invalid email or password");
+        }
 
-       return new UserProfileDto(
-               user.getUserId(),
-               user.getName(),
-               user.getEmail(),
-               user.getPhone()
-       );
+        return mapToDto(user);
     }
 
     public List<UserProfileDto> getAllUsers() {
-        List<User> users=userRepository.findAll();
+        List<User> users = userRepository.findAll();
         if (users.isEmpty()) {
             throw new NoSuchElementException("No users found in the database");
         }
+        // Using method reference for cleaner stream mapping
         return users.stream()
-                .map(user -> new UserProfileDto(
-                        user.getUserId(),
-                        user.getName(),
-                        user.getEmail(),
-                        user.getPhone()
-                ))
+                .map(this::mapToDto)
                 .collect(Collectors.toList());
+    }
+
+    // --- Private Helper Method ---
+    private UserProfileDto mapToDto(User user) {
+        return new UserProfileDto(
+                user.getUserId(),
+                user.getName(),
+                user.getEmail(),
+                user.getPhone()
+        );
     }
 }
