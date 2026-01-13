@@ -7,12 +7,13 @@ import com.example.cabify.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
+import lombok.extern.slf4j.Slf4j;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class UserService {
 
     @Autowired
@@ -23,6 +24,7 @@ public class UserService {
 
     public UserProfileDto registerUser(User user) {
         // 1. Validation Logic
+        log.info("Registering new user with email: {}", user.getEmail());
         if (user.getName() == null || user.getEmail() == null || user.getPassword() == null) {
             throw new IllegalArgumentException("Name, Email, and Password cannot be empty");
         }
@@ -55,14 +57,18 @@ public class UserService {
         user.setEmail(email);
 
         User savedUser = userRepository.save(user);
-
+        log.info("User registered successfully with ID: {}", savedUser.getUserId());
         // 3. Return using helper method
         return mapToDto(savedUser);
     }
 
     public UserProfileDto getUserById(long id) {
+        log.info("Fetching user details for ID: {}", id); // Log the fetch request
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("User not found with ID: " + id));
+                .orElseThrow(() -> {
+                    log.error("User not found with ID: {}", id);
+                    return new NoSuchElementException("User not found with ID: " + id);
+                });
         return mapToDto(user);
     }
 

@@ -4,15 +4,16 @@ import com.example.cabify.dto.driver.DriverDto;
 import com.example.cabify.model.Driver;
 import com.example.cabify.model.DriverStatus;
 import com.example.cabify.repository.DriverRepository;
-import com.example.cabify.service.IDriverService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class DriverServiceImpl implements IDriverService {
 
     @Autowired
@@ -20,7 +21,7 @@ public class DriverServiceImpl implements IDriverService {
 
     @Override
     public DriverDto registerDriver(Driver driver) {
-
+        log.info("Registering new Driver with License: {}", driver.getLicenseNumber());
         // 1. Check for Null values
         if (driver.getName() == null || driver.getLicenseNumber() == null || driver.getVehicleDetails() == null) {
             throw new IllegalArgumentException("Name, License Number, and Vehicle Details cannot be empty");
@@ -48,6 +49,7 @@ public class DriverServiceImpl implements IDriverService {
 
         // 4. Duplicate Check
         if (driverRepository.existsByLicenseNumber(license)) {
+            log.error("Driver registration failed: License {} already used", driver.getLicenseNumber());
             throw new IllegalStateException("Driver with this License Number is already registered!");
         }
 
@@ -59,7 +61,7 @@ public class DriverServiceImpl implements IDriverService {
         driver.setStatus(DriverStatus.OFFLINE); // Default status is OFFLINE
 
         Driver savedDriver = driverRepository.save(driver);
-
+        log.info("Driver registered successfully. ID: {}", savedDriver.getDriverId());
         // 6. Return DTO
         return mapToDto(savedDriver);
     }
@@ -73,6 +75,7 @@ public class DriverServiceImpl implements IDriverService {
 
     @Override
     public DriverDto updateDriverStatus(Long driverId, String statusStr) {
+        log.info("Request to update status for Driver ID: {} to {}", driverId, statusStr);
         Driver driver = driverRepository.findById(driverId)
                 .orElseThrow(() -> new NoSuchElementException("Driver not found with ID: " + driverId));
 
@@ -80,6 +83,7 @@ public class DriverServiceImpl implements IDriverService {
             // Converts string input (e.g., "available") to Enum (AVAILABLE)
             DriverStatus newStatus = DriverStatus.valueOf(statusStr.toUpperCase());
             driver.setStatus(newStatus);
+            log.info("Driver ID {} status updated to {}", driverId, newStatus);
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Invalid status. Use: AVAILABLE, BUSY, or OFFLINE");
         }
