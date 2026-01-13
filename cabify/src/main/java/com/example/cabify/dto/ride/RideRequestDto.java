@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class RideRequestDto {
-    private Long userId;       // Who is booking?
+    private int userId;       // Who is booking?
     private Long driverId;     // Which driver?
     private String source;
     private String destination;
