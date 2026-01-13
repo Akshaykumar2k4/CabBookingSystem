@@ -10,13 +10,14 @@ import com.example.cabify.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import lombok.extern.slf4j.Slf4j;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class RideService implements IRideService {
 
     @Autowired
@@ -32,15 +33,23 @@ public class RideService implements IRideService {
     @Transactional
     public RideResponseDto bookRide(RideRequestDto request) {
         // 1. Fetch User (Throw 404 if not found)
+        log.info("Booking request received - User ID: {}, Driver ID: {}", request.getUserId(), request.getDriverId()); // Log Entry
         User user = userRepository.findById(request.getUserId())
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + request.getUserId()));
+                .orElseThrow(() -> {
+                    log.error("Booking failed: User ID {} not found", request.getUserId()); // Log Error
+                    return new ResourceNotFoundException("User not found with ID: " + request.getUserId());
+                });
 
         // 2. Fetch Driver (Throw 404 if not found)
         Driver driver = driverRepository.findById(request.getDriverId())
-                .orElseThrow(() -> new ResourceNotFoundException("Driver not found with ID: " + request.getDriverId()));
+                .orElseThrow(() -> {
+                    log.error("Booking failed: Driver ID {} not found", request.getDriverId()); // Log Error
+                    return new ResourceNotFoundException("Driver not found with ID: " + request.getDriverId());
+                });
 
         // 3. LOGIC CHECK: Is the driver actually free? (Throw 409 CONFLICT if busy)
         if (driver.getStatus() != DriverStatus.AVAILABLE) {
+            log.warn("Booking failed: Driver {} is currently {}", request.getDriverId(), driver.getStatus()); // Log Warning (Business logic fail)
             throw new IllegalStateException("Driver is currently " + driver.getStatus() + " and cannot accept rides.");
         }
 
@@ -62,7 +71,7 @@ public class RideService implements IRideService {
         // 6. Lock the Driver
         driver.setStatus(DriverStatus.BUSY);
         driverRepository.save(driver);
-
+        log.info("Ride booked successfully. Ride ID: {}, Fare: {}", savedRide.getId(), savedRide.getFare()); // Log Success
         return mapToDto(savedRide);
     }
 
@@ -70,11 +79,16 @@ public class RideService implements IRideService {
     @Transactional
     public RideResponseDto endRide(Long rideId) {
         // 1. Find Ride (Throw 404 if not found)
+        log.info("Request to end Ride ID: {}", rideId); // Log Entry
         Ride ride = rideRepository.findById(rideId)
-                .orElseThrow(() -> new ResourceNotFoundException("Ride not found with ID: " + rideId));
+                .orElseThrow(() -> {
+                    log.error("End Ride failed: Ride ID {} not found", rideId);
+                    return new ResourceNotFoundException("Ride not found with ID: " + rideId);
+                });
 
         // 2. Validate Status (Throw 409 CONFLICT if already done)
         if (ride.getStatus() == RideStatus.COMPLETED) {
+            log.warn("End Ride failed: Ride ID {} is already COMPLETED", rideId);
             throw new IllegalStateException("Ride is already completed!");
         }
 
@@ -87,7 +101,7 @@ public class RideService implements IRideService {
         Driver driver = ride.getDriver();
         driver.setStatus(DriverStatus.AVAILABLE);
         driverRepository.save(driver);
-
+        log.info("Ride ID {} completed successfully at {}", rideId, ride.getEndTime()); // Log Success
         return mapToDto(ride);
     }
 
