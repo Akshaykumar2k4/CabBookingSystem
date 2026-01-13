@@ -1,4 +1,4 @@
-package com.example.cabify.service.impl;
+package com.example.cabify.service;
 
 import com.example.cabify.dto.driver.DriverDto;
 import com.example.cabify.model.Driver;
