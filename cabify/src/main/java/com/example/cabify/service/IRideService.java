@@ -13,5 +13,5 @@ public interface IRideService {
     RideResponseDto endRide(Long rideId);
 
     // 3. User views their history
-    List<RideResponseDto> getMyRides(long userId);
+    List<RideResponseDto> getMyRides(Long userId);
 }
