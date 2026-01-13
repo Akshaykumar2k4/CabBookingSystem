@@ -40,7 +40,7 @@ public class RideService implements IRideService {
                 .orElseThrow(() -> new RuntimeException("Driver not found"));
 
         // 3. LOGIC CHECK: Is the driver actually free?
-        if (!driver.getStatus().equalsIgnoreCase("AVAILABLE")) {
+        if (driver.getStatus()!=DriverStatus.AVAILABLE) {
             throw new RuntimeException("Driver is not available!");
         }
 
@@ -94,9 +94,9 @@ public class RideService implements IRideService {
 
     // --- 3. GET RIDE HISTORY ---
     @Override
-    public List<RideResponseDto> getMyRides(Long userId) {
+    public List<RideResponseDto> getMyRides(long userId) {
         // 1. Find the User (to ensure they exist)
-        User user = userRepository.findById(userId)
+        User user = userRepository.findByUserId(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         // 2. Fetch all rides for this user from DB

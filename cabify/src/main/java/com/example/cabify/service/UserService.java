@@ -65,7 +65,7 @@ public class UserService {
 
     }
 
-    public UserProfileDto getUserById(int id) {
+    public UserProfileDto getUserById(long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("User not found with ID: " + id));
 
