@@ -30,17 +30,58 @@ public class RideService implements IRideService {
     private DriverRepository driverRepository;
     private static final Map<String, Double> routeDistances = new HashMap<>();
     static {
-        // ALWAYS put the location that is first in the alphabet on the left!
+        // --- 8 MAJOR HUBS
+        // Locations: Adyar, Anna Nagar, Guindy, Marina, Sholinganallur, Tambaram, TNagar, Velachery
+        // 1. Adyar Connections
+        routeDistances.put("Adyar-AnnaNagar", 14.0);
         routeDistances.put("Adyar-Guindy", 7.0);
-        routeDistances.put("Adyar-Marina", 36.0);
-        routeDistances.put("Guindy-T-Nagar", 15.0);
-        routeDistances.put("Kelambakkam-Siruseri", 6.0);
-        routeDistances.put("Marina-T-Nagar", 24.0);
-        routeDistances.put("Medavakkam-Sholinganallur", 8.0);
-        routeDistances.put("Navalur-Sholinganallur", 5.0);
+        routeDistances.put("Adyar-Marina", 8.0);
+        routeDistances.put("Adyar-Sholinganallur", 14.0);
+        routeDistances.put("Adyar-Tambaram", 18.0);
+        routeDistances.put("Adyar-TNagar", 6.0);
+        routeDistances.put("Adyar-Velachery", 5.0);
+
+        // 2. Anna Nagar Connections
+        routeDistances.put("AnnaNagar-Guindy", 11.0);
+        routeDistances.put("AnnaNagar-Marina", 12.0);
+        routeDistances.put("AnnaNagar-Sholinganallur", 26.0);
+        routeDistances.put("AnnaNagar-Tambaram", 22.0);
+        routeDistances.put("AnnaNagar-TNagar", 9.0);
+        routeDistances.put("AnnaNagar-Velachery", 16.0);
+
+        // 3. Guindy Connections
+        routeDistances.put("Guindy-Marina", 12.0);
+        routeDistances.put("Guindy-Sholinganallur", 16.0);
+        routeDistances.put("Guindy-Tambaram", 14.0);
+        routeDistances.put("Guindy-TNagar", 6.0);
+        routeDistances.put("Guindy-Velachery", 4.0);
+
+        // 4. Marina Connections
+        routeDistances.put("Marina-Sholinganallur", 22.0);
+        routeDistances.put("Marina-Tambaram", 26.0);
+        routeDistances.put("Marina-TNagar", 7.0);
+        routeDistances.put("Marina-Velachery", 13.0);
+
+        // 5. Sholinganallur Connections (The OMR Hub)
+        routeDistances.put("Sholinganallur-Tambaram", 14.0);
+        routeDistances.put("Sholinganallur-TNagar", 19.0);
+        routeDistances.put("Sholinganallur-Velachery", 10.0);
+
+        // 6. Tambaram Connections
+        routeDistances.put("Tambaram-TNagar", 18.0);
+        routeDistances.put("Tambaram-Velachery", 14.0);
+
+        // 7. TNagar Connections
+        routeDistances.put("TNagar-Velachery", 9.0);
+
+        // --- OMR LOCALS (Short Distance Connectors) ---
+        routeDistances.put("Kelambakkam-Siruseri", 5.0);
         routeDistances.put("Navalur-Siruseri", 7.0);
+        routeDistances.put("Navalur-Sholinganallur", 5.0);
+        routeDistances.put("Medavakkam-Sholinganallur", 8.0);
         routeDistances.put("Perungudi-Thoraipakkam", 3.0);
-        routeDistances.put("Sholinganallur-Siruseri", 12.0);
+        routeDistances.put("Perungudi-Velachery", 4.0);
+        routeDistances.put("Thoraipakkam-Sholinganallur", 6.0);
     }
 
     @Override
@@ -53,6 +94,10 @@ public class RideService implements IRideService {
         String dest = request.getDestination();
         String routeKey = (src.compareTo(dest) < 0) ? src + "-" + dest : dest + "-" + src;
 
+        if (!routeDistances.containsKey(routeKey)) {
+            log.warn("Booking failed: Invalid route {} to {}", src, dest);
+            throw new IllegalArgumentException("Service is not available for this route: " + src + " to " + dest);
+        }
         Double distance = routeDistances.getOrDefault(routeKey, 15.0);
 
         double ratePerKm;
@@ -164,5 +209,14 @@ public class RideService implements IRideService {
         dto.setFare(Math.round(ride.getFare() * 100.0) / 100.0);
         dto.setBookingTime(ride.getStartTime());
         return dto;
+    }
+
+    @Override
+    public List<String> getAvailableLocations() {
+        return routeDistances.keySet().stream()
+                .flatMap(key -> java.util.Arrays.stream(key.split("-")))
+                .distinct()
+                .sorted()
+                .collect(Collectors.toList());
     }
 }

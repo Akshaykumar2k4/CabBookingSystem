@@ -62,4 +62,9 @@ public class RideController {
 
         return new ResponseEntity<>(successResponse, HttpStatus.OK);
     }
+
+    @GetMapping("/locations")
+    public ResponseEntity<List<String>> getLocations() {
+        return new ResponseEntity<>(rideService.getAvailableLocations(), HttpStatus.OK);
+    }
 }
