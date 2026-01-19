@@ -123,7 +123,10 @@ public class RideService implements IRideService {
                     log.error("Booking failed: Driver ID {} not found", request.getDriverId());
                     return new ResourceNotFoundException("Driver not found with ID: " + request.getDriverId());
                 });
-
+        if (rideRepository.existsByUserAndStatus(user, RideStatus.BOOKED)) {
+            log.warn("Booking failed: User ID {} already has an ongoing ride", request.getUserId());
+            throw new IllegalStateException("You already have an ongoing ride! Complete it before booking a new one.");
+        }
         if (driver.getStatus() != DriverStatus.AVAILABLE) {
             log.warn("Booking failed: Driver {} is currently {}", request.getDriverId(), driver.getStatus());
             throw new IllegalStateException("Driver is currently " + driver.getStatus() + " and cannot accept rides.");
