@@ -1,23 +1,23 @@
 package com.example.cabify.service;
-
 import com.example.cabify.dto.ride.RideRequestDto;
 import com.example.cabify.dto.ride.RideResponseDto;
-import com.example.cabify.exception.ResourceNotFoundException; // Import this
+import com.example.cabify.exception.ResourceNotFoundException;
 import com.example.cabify.model.*;
 import com.example.cabify.repository.DriverRepository;
 import com.example.cabify.repository.RideRepository;
 import com.example.cabify.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import lombok.extern.slf4j.Slf4j;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
-@Slf4j
+@Slf4j 
 public class RideService implements IRideService {
 
     @Autowired
@@ -28,90 +28,124 @@ public class RideService implements IRideService {
 
     @Autowired
     private DriverRepository driverRepository;
+    private static final Map<String, Double> routeDistances = new HashMap<>();
+    static {
+        // ALWAYS put the location that is first in the alphabet on the left!
+        routeDistances.put("Adyar-Guindy", 7.0);
+        routeDistances.put("Adyar-Marina", 36.0);
+        routeDistances.put("Guindy-T-Nagar", 15.0);
+        routeDistances.put("Kelambakkam-Siruseri", 6.0);
+        routeDistances.put("Marina-T-Nagar", 24.0);
+        routeDistances.put("Medavakkam-Sholinganallur", 8.0);
+        routeDistances.put("Navalur-Sholinganallur", 5.0);
+        routeDistances.put("Navalur-Siruseri", 7.0);
+        routeDistances.put("Perungudi-Thoraipakkam", 3.0);
+        routeDistances.put("Sholinganallur-Siruseri", 12.0);
+    }
 
     @Override
     @Transactional
     public RideResponseDto bookRide(RideRequestDto request) {
-        // 1. Fetch User (Throw 404 if not found)
-        log.info("Booking request received - User ID: {}, Driver ID: {}", request.getUserId(), request.getDriverId()); // Log Entry
+        log.info("Booking request received - User ID: {}, Driver ID: {}, Route: {} to {}",
+                request.getUserId(), request.getDriverId(), request.getSource(), request.getDestination());
+
+        String src = request.getSource();
+        String dest = request.getDestination();
+        String routeKey = (src.compareTo(dest) < 0) ? src + "-" + dest : dest + "-" + src;
+
+        Double distance = routeDistances.getOrDefault(routeKey, 15.0);
+
+        double ratePerKm;
+        if (distance > 30) {
+            ratePerKm = 7.0;
+        } else if (distance > 20) {
+            ratePerKm = 8.0;
+        } else if (distance > 10) {
+            ratePerKm = 9.0;
+        } else {
+            ratePerKm = 10.0;
+        }
+        double totalFare = distance * ratePerKm;
+
         User user = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> {
-                    log.error("Booking failed: User ID {} not found", request.getUserId()); // Log Error
+                    log.error("Booking failed: User ID {} not found", request.getUserId());
                     return new ResourceNotFoundException("User not found with ID: " + request.getUserId());
                 });
 
-        // 2. Fetch Driver (Throw 404 if not found)
         Driver driver = driverRepository.findById(request.getDriverId())
                 .orElseThrow(() -> {
-                    log.error("Booking failed: Driver ID {} not found", request.getDriverId()); // Log Error
+                    log.error("Booking failed: Driver ID {} not found", request.getDriverId());
                     return new ResourceNotFoundException("Driver not found with ID: " + request.getDriverId());
                 });
 
-        // 3. LOGIC CHECK: Is the driver actually free? (Throw 409 CONFLICT if busy)
         if (driver.getStatus() != DriverStatus.AVAILABLE) {
-            log.warn("Booking failed: Driver {} is currently {}", request.getDriverId(), driver.getStatus()); // Log Warning (Business logic fail)
+            log.warn("Booking failed: Driver {} is currently {}", request.getDriverId(), driver.getStatus());
             throw new IllegalStateException("Driver is currently " + driver.getStatus() + " and cannot accept rides.");
         }
 
-        // 4. Calculate Fare
-        Double calculatedFare = calculateFare();
-
-        // 5. Create and Save Ride
+        // Save Ride
         Ride ride = new Ride();
         ride.setUser(user);
         ride.setDriver(driver);
-        ride.setSource(request.getSource());
-        ride.setDestination(request.getDestination());
-        ride.setFare(calculatedFare);
+        ride.setSource(src);
+        ride.setDestination(dest);
+        ride.setFare(totalFare);
         ride.setStatus(RideStatus.BOOKED);
         ride.setStartTime(LocalDateTime.now());
 
         Ride savedRide = rideRepository.save(ride);
 
-        // 6. Lock the Driver
+        //  Lock Driver
         driver.setStatus(DriverStatus.BUSY);
         driverRepository.save(driver);
-        log.info("Ride booked successfully. Ride ID: {}, Fare: {}", savedRide.getId(), savedRide.getFare()); // Log Success
+
+        // Combined Success Log
+        log.info("Ride booked successfully. Ride ID: {}, Distance: {}km, Fare: {}", savedRide.getId(), distance, savedRide.getFare());
+
         return mapToDto(savedRide);
     }
 
     @Override
     @Transactional
     public RideResponseDto endRide(Long rideId) {
-        // 1. Find Ride (Throw 404 if not found)
-        log.info("Request to end Ride ID: {}", rideId); // Log Entry
+        log.info("Request to end Ride ID: {}", rideId); // Restored Log
+
         Ride ride = rideRepository.findById(rideId)
                 .orElseThrow(() -> {
-                    log.error("End Ride failed: Ride ID {} not found", rideId);
+                    log.error("End Ride failed: Ride ID {} not found", rideId); // Restored Log
                     return new ResourceNotFoundException("Ride not found with ID: " + rideId);
                 });
 
-        // 2. Validate Status (Throw 409 CONFLICT if already done)
         if (ride.getStatus() == RideStatus.COMPLETED) {
-            log.warn("End Ride failed: Ride ID {} is already COMPLETED", rideId);
+            log.warn("End Ride failed: Ride ID {} is already COMPLETED", rideId); // Restored Log
             throw new IllegalStateException("Ride is already completed!");
         }
 
-        // 3. Update Status
+        // Update Status
         ride.setStatus(RideStatus.COMPLETED);
         ride.setEndTime(LocalDateTime.now());
         rideRepository.save(ride);
 
-        // 4. Unlock the Driver
+        // Unlock Driver
         Driver driver = ride.getDriver();
         driver.setStatus(DriverStatus.AVAILABLE);
         driverRepository.save(driver);
-        log.info("Ride ID {} completed successfully at {}", rideId, ride.getEndTime()); // Log Success
+
+        log.info("Ride ID {} completed successfully at {}", rideId, ride.getEndTime()); // Restored Log
         return mapToDto(ride);
     }
 
     @Override
     public List<RideResponseDto> getMyRides(Long userId) {
-        // 1. Validate User exists first
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + userId));
+        // Validation with Logs
+        userRepository.findById(userId)
+                .orElseThrow(() -> {
+                    log.error("Get Rides failed: User ID {} not found", userId);
+                    return new ResourceNotFoundException("User not found with ID: " + userId);
+                });
 
-        List<Ride> rides = rideRepository.findByUser(user);
+        List<Ride> rides = rideRepository.findByUser(userRepository.getById(userId));
 
         return rides.stream()
                 .map(this::mapToDto)
@@ -119,11 +153,6 @@ public class RideService implements IRideService {
     }
 
     // --- Helpers ---
-
-    private Double calculateFare() {
-        return 100 + (400 * new Random().nextDouble());
-    }
-
     private RideResponseDto mapToDto(Ride ride) {
         RideResponseDto dto = new RideResponseDto();
         dto.setRideId(ride.getId());
