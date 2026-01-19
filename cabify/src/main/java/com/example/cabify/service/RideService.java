@@ -90,8 +90,8 @@ public class RideService implements IRideService {
         log.info("Booking request received - User ID: {}, Driver ID: {}, Route: {} to {}",
                 request.getUserId(), request.getDriverId(), request.getSource(), request.getDestination());
 
-        String src = request.getSource();
-        String dest = request.getDestination();
+        String src = validateAndFormat(request.getSource());
+        String dest = validateAndFormat(request.getDestination());
         String routeKey = (src.compareTo(dest) < 0) ? src + "-" + dest : dest + "-" + src;
 
         if (!routeDistances.containsKey(routeKey)) {
@@ -218,5 +218,16 @@ public class RideService implements IRideService {
                 .distinct()
                 .sorted()
                 .collect(Collectors.toList());
+    }
+
+    private String validateAndFormat(String input) {
+        // Get all valid locations (Adyar, Guindy, TNagar...)
+        List<String> validLocations = getAvailableLocations();
+
+        // Find the one that matches, ignoring case
+        return validLocations.stream()
+                .filter(loc -> loc.equalsIgnoreCase(input))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Invalid Location: " + input));
     }
 }
