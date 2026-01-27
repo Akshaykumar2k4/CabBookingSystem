@@ -28,8 +28,6 @@ public class Ride {
     private String destination;
 
     private Double fare;
-
-    // Uses the Enum we just created
     @Enumerated(EnumType.STRING)
     private RideStatus status;
 
