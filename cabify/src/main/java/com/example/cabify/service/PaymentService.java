@@ -36,7 +36,7 @@ public class PaymentService {
 
         //  Check if already paid (Prevent Double Payment)
         // If this throws, GlobalExceptionHandler returns 409 Conflict
-        if (ride.getUser().getUserId() != user.getUserId()) {
+        if (!ride.getUser().getUserId().equals(user.getUserId())) {
             throw new SecurityException("Unauthorized: You cannot pay for another user's ride.");
         }
         if (ride.getStatus() != RideStatus.COMPLETED) {

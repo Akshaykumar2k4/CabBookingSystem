@@ -6,6 +6,5 @@ import lombok.Data;
 public class PaymentRequestDto {
     private Long rideId;
     private Long userId;
-    private Double amount;
     private String paymentMethod;
 }
