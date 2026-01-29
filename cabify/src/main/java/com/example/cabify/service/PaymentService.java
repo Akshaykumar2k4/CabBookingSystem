@@ -52,7 +52,7 @@ public class PaymentService {
         Payment payment = new Payment();
         payment.setRide(ride);
         payment.setUser(user);
-        payment.setAmount(request.getAmount());
+        payment.setAmount(ride.getFare());
         payment.setPaymentMethod(request.getPaymentMethod());
         payment.setStatus(status);
         // Timestamp is handled automatically by @PrePersist in Entity
