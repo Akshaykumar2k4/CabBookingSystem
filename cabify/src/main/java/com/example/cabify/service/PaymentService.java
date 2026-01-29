@@ -2,6 +2,7 @@ package com.example.cabify.service;
 
 import com.example.cabify.dto.payment.PaymentRequestDto;
 import com.example.cabify.dto.payment.PaymentResponseDto;
+import com.example.cabify.exception.ResourceNotFoundException;
 import com.example.cabify.model.*;
 import com.example.cabify.repository.PaymentRepository;
 import com.example.cabify.repository.RideRepository;
@@ -25,21 +26,27 @@ public class PaymentService {
     // Logic for: POST /api/payments/process
     @Transactional
     public PaymentResponseDto processPayment(PaymentRequestDto request) {
-        // 1. Validate Ride
+        //  Validate Ride
         Ride ride = rideRepository.findById(request.getRideId())
-                .orElseThrow(() -> new RuntimeException("Ride not found with ID: " + request.getRideId()));
+                .orElseThrow(() -> new ResourceNotFoundException("Ride not found with ID: " + request.getRideId()));
 
-        // 2. Validate User
+        //  Validate User
         User user = userRepository.findById(request.getUserId())
-                .orElseThrow(() -> new RuntimeException("User not found with ID: " + request.getUserId()));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + request.getUserId()));
 
-        // 3. Check if already paid (Prevent Double Payment)
+        //  Check if already paid (Prevent Double Payment)
         // If this throws, GlobalExceptionHandler returns 409 Conflict
+        if (ride.getUser().getUserId() != user.getUserId()) {
+            throw new SecurityException("Unauthorized: You cannot pay for another user's ride.");
+        }
+        if (ride.getStatus() != RideStatus.COMPLETED) {
+            throw new IllegalStateException("Cannot pay. Ride status is " + ride.getStatus() + ", expected COMPLETED.");
+        }
         if (paymentRepository.findByRide(ride).isPresent()) {
             throw new IllegalStateException("Payment already made for this ride.");
         }
 
-        // 4. Simulate Payment Gateway (As per requirement)
+        // Simulate Payment Gateway (As per requirement)
         boolean bankSuccess = simulateBankTransaction();
         PaymentStatus status = bankSuccess ? PaymentStatus.SUCCESS : PaymentStatus.FAILED;
 
@@ -48,7 +55,7 @@ public class PaymentService {
             throw new RuntimeException("Payment Gateway Failed");
         }
 
-        // 5. Save Payment
+        //  Save Payment
         Payment payment = new Payment();
         payment.setRide(ride);
         payment.setUser(user);
@@ -58,18 +65,20 @@ public class PaymentService {
         // Timestamp is handled automatically by @PrePersist in Entity
 
         paymentRepository.save(payment);
+        ride.setStatus(RideStatus.PAID);
+        rideRepository.save(ride);
 
-        // 6. Return Receipt
+        //  Return Receipt
         return mapToDto(payment);
     }
 
     // Logic for: GET /api/payments/receipt/{rideId}
     public PaymentResponseDto getReceipt(Long rideId) {
         Ride ride = rideRepository.findById(rideId)
-                .orElseThrow(() -> new RuntimeException("Ride not found with ID: " + rideId));
+                .orElseThrow(() -> new ResourceNotFoundException("Ride not found with ID: " + rideId));
 
         Payment payment = paymentRepository.findByRide(ride)
-                .orElseThrow(() -> new RuntimeException("Receipt not found for ride ID: " + rideId));
+                .orElseThrow(() -> new ResourceNotFoundException("Receipt not found for ride ID: " + rideId));
 
         return mapToDto(payment);
     }
