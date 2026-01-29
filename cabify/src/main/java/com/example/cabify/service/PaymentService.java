@@ -25,48 +25,51 @@ public class PaymentService {
     // Logic for: POST /api/payments/process
     @Transactional
     public PaymentResponseDto processPayment(PaymentRequestDto request) {
-        // Validate Ride
+        // 1. Validate Ride
         Ride ride = rideRepository.findById(request.getRideId())
-                .orElseThrow(() -> new RuntimeException("Ride not found"));
+                .orElseThrow(() -> new RuntimeException("Ride not found with ID: " + request.getRideId()));
 
-        // Validate User
+        // 2. Validate User
         User user = userRepository.findById(request.getUserId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new RuntimeException("User not found with ID: " + request.getUserId()));
 
-        // Check if already paid (Prevent Double Payment)
+        // 3. Check if already paid (Prevent Double Payment)
+        // If this throws, GlobalExceptionHandler returns 409 Conflict
         if (paymentRepository.findByRide(ride).isPresent()) {
             throw new IllegalStateException("Payment already made for this ride.");
         }
 
+        // 4. Simulate Payment Gateway (As per requirement)
         boolean bankSuccess = simulateBankTransaction();
         PaymentStatus status = bankSuccess ? PaymentStatus.SUCCESS : PaymentStatus.FAILED;
 
         if (!bankSuccess) {
+            // If this throws, GlobalExceptionHandler returns 500 Internal Server Error
             throw new RuntimeException("Payment Gateway Failed");
         }
 
-        //  Save Payment
+        // 5. Save Payment
         Payment payment = new Payment();
         payment.setRide(ride);
         payment.setUser(user);
         payment.setAmount(request.getAmount());
         payment.setPaymentMethod(request.getPaymentMethod());
         payment.setStatus(status);
-        // Timestamp is handled automatically by @PrePersist
+        // Timestamp is handled automatically by @PrePersist in Entity
 
         paymentRepository.save(payment);
 
-        //Return Receipt
+        // 6. Return Receipt
         return mapToDto(payment);
     }
 
     // Logic for: GET /api/payments/receipt/{rideId}
     public PaymentResponseDto getReceipt(Long rideId) {
         Ride ride = rideRepository.findById(rideId)
-                .orElseThrow(() -> new RuntimeException("Ride not found"));
+                .orElseThrow(() -> new RuntimeException("Ride not found with ID: " + rideId));
 
         Payment payment = paymentRepository.findByRide(ride)
-                .orElseThrow(() -> new RuntimeException("Receipt not found for this ride"));
+                .orElseThrow(() -> new RuntimeException("Receipt not found for ride ID: " + rideId));
 
         return mapToDto(payment);
     }
