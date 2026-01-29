@@ -1,0 +1,6 @@
+2026-01-29T08:51:50.322+05:30  WARN 18708 --- [cabify] [HikariPool-1:housekeeper] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=14h54m25s973ms137µs500ns).
+2026-01-29T09:23:46.641+05:30  WARN 18708 --- [cabify] [HikariPool-1:housekeeper] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=16m23s906ms387µs600ns).
+2026-01-29T09:31:28.054+05:30  WARN 18708 --- [cabify] [HikariPool-1:housekeeper] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=2m41s335ms171µs500ns).
+2026-01-29T09:44:29.232+05:30  WARN 18708 --- [cabify] [HikariPool-1:housekeeper] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=13m1s177ms677µs700ns).
+2026-01-29T09:46:43.138+05:30  INFO 18708 --- [cabify] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-01-29T09:46:43.164+05:30  INFO 18708 --- [cabify] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
