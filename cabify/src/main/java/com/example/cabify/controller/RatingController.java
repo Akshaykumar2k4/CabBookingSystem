@@ -1,47 +1,46 @@
 package com.example.cabify.controller;
 
 import com.example.cabify.dto.rating.RatingRequestDto;
-import com.example.cabify.dto.SuccessResponse; // Assuming this is the location from your screenshot
-import com.example.cabify.model.Rating;
+import com.example.cabify.dto.rating.RatingResponseDto;
+import com.example.cabify.dto.SuccessResponse;
 import com.example.cabify.service.IRatingService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus; // Added to match UserController style
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/ratings")
+@RequestMapping("/api/ratings/") // Added trailing slash to match UserController
 public class RatingController {
 
     @Autowired
     private IRatingService ratingService;
 
-    @PostMapping("/submit")
-    public ResponseEntity<SuccessResponse<Rating>> submitRating(@RequestBody RatingRequestDto ratingDto) {
-        Rating savedRating = ratingService.submitRating(ratingDto);
+    @PostMapping("submit") // Removed leading slash to match UserController style
+    public ResponseEntity<SuccessResponse<RatingResponseDto>> submitRating(@RequestBody RatingRequestDto ratingDto) {
+        RatingResponseDto responseData = ratingService.submitRating(ratingDto);
 
-        // Fix: Use String, int, and Object to match your class signature
-        SuccessResponse<Rating> response = new SuccessResponse<>(
+        SuccessResponse<RatingResponseDto> response = new SuccessResponse<>(
                 "Rating submitted successfully",
-                201, // HTTP Created status code
-                savedRating
+                HttpStatus.CREATED.value(), // Using HttpStatus.CREATED.value() like UserController
+                responseData
         );
 
-        return ResponseEntity.ok(response);
+        return new ResponseEntity<>(response, HttpStatus.CREATED); // Using 'new ResponseEntity<>' style
     }
 
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<SuccessResponse<List<Rating>>> getRatingsForUser(@PathVariable Long userId) {
-        List<Rating> ratings = ratingService.getRatingsForUser(userId);
+    @GetMapping("user/{userId}") // Removed leading slash to match UserController style
+    public ResponseEntity<SuccessResponse<List<RatingResponseDto>>> getRatingsForUser(@PathVariable Long userId) {
+        List<RatingResponseDto> ratings = ratingService.getRatingsForUser(userId);
 
-        // Fix: Use String, int, and List to match your class signature
-        SuccessResponse<List<Rating>> response = new SuccessResponse<>(
+        SuccessResponse<List<RatingResponseDto>> response = new SuccessResponse<>(
                 "Ratings retrieved successfully",
-                200, // HTTP OK status code
+                HttpStatus.OK.value(), // Using HttpStatus.OK.value()
                 ratings
         );
 
-        return ResponseEntity.ok(response);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

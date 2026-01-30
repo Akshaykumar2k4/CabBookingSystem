@@ -4,9 +4,9 @@ import lombok.Data;
 
 @Data
 public class RatingRequestDto {
-    private Long rideId;      // The ID of the completed ride
-    private Long fromUserId;  // ID of the person giving the rating
-    private Long toUserId;    // ID of the person being rated
-    private Integer score;    // Rating value (1-5)
-    private String comments;  // Feedback text
+    private Long rideId;      // ID of the ride being rated
+    private Long fromUserId;  // ID of the user giving the feedback
+    private Long toUserId;    // ID of the user receiving the feedback (usually the driver)
+    private int score;        // Numerical rating (e.g., 1 to 5)
+    private String comments;  // Optional text feedback
 }
