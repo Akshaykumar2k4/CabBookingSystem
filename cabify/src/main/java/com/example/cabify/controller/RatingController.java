@@ -17,7 +17,7 @@ public class RatingController {
     @Autowired
     private IRatingService ratingService;
 
-    @PostMapping
+    @PostMapping("/submit")
     public ResponseEntity<SuccessResponse<Rating>> submitRating(@RequestBody RatingRequestDto ratingDto) {
         Rating savedRating = ratingService.submitRating(ratingDto);
 
