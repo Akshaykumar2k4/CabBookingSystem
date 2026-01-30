@@ -18,5 +18,5 @@ public interface RatingRepository extends JpaRepository<Rating, Long> {
      * Checks if a rating already exists for a specific ride.
      * Prevents double-rating for the same trip.
      */
-    boolean existsByRideRideIdAndFromUserId(Long rideId, Long fromUserId);
+    boolean existsByRideIdAndFromUserId(Long rideId, Long fromUserId);
 }

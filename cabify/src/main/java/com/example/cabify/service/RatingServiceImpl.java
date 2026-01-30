@@ -25,7 +25,7 @@ public class RatingServiceImpl implements IRatingService {
                 .orElseThrow(() -> new RuntimeException("Ride not found"));
 
         // 2. Prevent duplicate ratings
-        if (ratingRepository.existsByRideRideIdAndFromUserId(ratingDto.getRideId(), ratingDto.getFromUserId())) {
+        if (ratingRepository.existsByRideIdAndFromUserId(ratingDto.getRideId(), ratingDto.getFromUserId())) {
             throw new RuntimeException("You have already rated this ride.");
         }
 
