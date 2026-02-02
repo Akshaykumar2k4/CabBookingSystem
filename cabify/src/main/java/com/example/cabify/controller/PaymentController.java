@@ -4,6 +4,7 @@ import com.example.cabify.dto.SuccessResponse;
 import com.example.cabify.dto.payment.PaymentRequestDto;
 import com.example.cabify.dto.payment.PaymentResponseDto;
 import com.example.cabify.service.PaymentService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +19,7 @@ public class PaymentController {
 
     // 1. Process a Payment
     @PostMapping("/process")
-    public ResponseEntity<SuccessResponse<PaymentResponseDto>> processPayment(@RequestBody PaymentRequestDto request) {
+    public ResponseEntity<SuccessResponse<PaymentResponseDto>> processPayment(@Valid @RequestBody PaymentRequestDto request) {
         PaymentResponseDto result = paymentService.processPayment(request);
 
         SuccessResponse<PaymentResponseDto> response = new SuccessResponse<>(

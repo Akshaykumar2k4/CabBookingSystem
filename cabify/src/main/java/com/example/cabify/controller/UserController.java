@@ -5,8 +5,9 @@ import com.example.cabify.dto.user.AuthResponseDto;
 import com.example.cabify.dto.user.LoginRequestDto;
 import com.example.cabify.dto.user.UserProfileDto;
 import com.example.cabify.model.User;
-import com.example.cabify.service.UserService;
+import com.example.cabify.service.UserServiceImpl;
 import com.example.cabify.util.JwtUtil;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +23,7 @@ import java.util.List;
 public class UserController {
 
     @Autowired
-    private UserService userService;
+    private UserServiceImpl userService;
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -31,7 +32,7 @@ public class UserController {
     private JwtUtil jwtUtil;
 
     @PostMapping("register")
-        public ResponseEntity<SuccessResponse<UserProfileDto>> registerUser(@RequestBody User user) {
+        public ResponseEntity<SuccessResponse<UserProfileDto>> registerUser(@Valid @RequestBody User user) {
         UserProfileDto userProfile = userService.registerUser(user);
         SuccessResponse<UserProfileDto> response = new SuccessResponse<>(
                 "User successfully created!",
@@ -42,7 +43,7 @@ public class UserController {
     }
 
     @PostMapping("login")
-    public ResponseEntity<?> userLogin(@RequestBody LoginRequestDto loginRequestDto) throws Exception {
+    public ResponseEntity<?> userLogin(@Valid @RequestBody LoginRequestDto loginRequestDto) throws Exception {
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(

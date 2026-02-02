@@ -4,6 +4,7 @@ import com.example.cabify.dto.SuccessResponse;
 import com.example.cabify.dto.driver.DriverDto;
 import com.example.cabify.model.Driver;
 import com.example.cabify.service.IDriverService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,7 @@ public class DriverController {
 
     // 1. Register a Driver
     @PostMapping("register")
-    public ResponseEntity<SuccessResponse<DriverDto>> registerDriver(@RequestBody Driver driver) {
+    public ResponseEntity<SuccessResponse<DriverDto>> registerDriver(@Valid @RequestBody Driver driver) {
         DriverDto registeredDriver = driverService.registerDriver(driver);
 
         SuccessResponse<DriverDto> response = new SuccessResponse<>(

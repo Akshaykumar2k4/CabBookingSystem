@@ -4,6 +4,7 @@ import com.example.cabify.dto.ride.RideRequestDto;
 import com.example.cabify.dto.ride.RideResponseDto;
 import com.example.cabify.dto.SuccessResponse;
 import com.example.cabify.service.IRideService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,7 @@ public class RideController {
 
     // 1. Book a Ride
     @PostMapping("/book")
-    public ResponseEntity<SuccessResponse<RideResponseDto>> bookRide(@RequestBody RideRequestDto request) {
+    public ResponseEntity<SuccessResponse<RideResponseDto>> bookRide(@Valid @RequestBody RideRequestDto request) {
         RideResponseDto response = rideService.bookRide(request);
 
         // Passing message, 201 status code, and the data object

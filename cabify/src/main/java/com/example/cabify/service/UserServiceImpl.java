@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-public class UserService {
+public class UserServiceImpl implements IUserService {
 
     @Autowired
     private UserRepository userRepository;
@@ -22,8 +22,8 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Override
     public UserProfileDto registerUser(User user) {
-        // 1. Validation Logic
         log.info("Registering new user with email: {}", user.getEmail());
         if (user.getName() == null || user.getEmail() == null || user.getPassword() == null) {
             throw new IllegalArgumentException("Name, Email, and Password cannot be empty");
@@ -51,19 +51,18 @@ public class UserService {
             throw new IllegalStateException("Email is already registered!");
         }
 
-        // 2. Data Persistence
         user.setPassword(passwordEncoder.encode(password));
         user.setName(name);
         user.setEmail(email);
 
         User savedUser = userRepository.save(user);
         log.info("User registered successfully with ID: {}", savedUser.getUserId());
-        // 3. Return using helper method
         return mapToDto(savedUser);
     }
 
+    @Override
     public UserProfileDto getUserById(long id) {
-        log.info("Fetching user details for ID: {}", id); // Log the fetch request
+        log.info("Fetching user details for ID: {}", id);
         User user = userRepository.findById(id)
                 .orElseThrow(() -> {
                     log.error("User not found with ID: {}", id);
@@ -72,6 +71,7 @@ public class UserService {
         return mapToDto(user);
     }
 
+    @Override
     public UserProfileDto userLogin(LoginRequestDto loginRequestDto) {
         User user = userRepository.findByEmail(loginRequestDto.getEmail())
                 .orElseThrow(() -> new NoSuchElementException("User not found"));
@@ -83,18 +83,17 @@ public class UserService {
         return mapToDto(user);
     }
 
+    @Override
     public List<UserProfileDto> getAllUsers() {
         List<User> users = userRepository.findAll();
         if (users.isEmpty()) {
             throw new NoSuchElementException("No users found in the database");
         }
-        // Using method reference for cleaner stream mapping
         return users.stream()
                 .map(this::mapToDto)
                 .collect(Collectors.toList());
     }
 
-    // --- Private Helper Method ---
     private UserProfileDto mapToDto(User user) {
         return new UserProfileDto(
                 user.getUserId(),
