@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.time.LocalDateTime;
 
 @Entity
@@ -28,7 +27,8 @@ public class Payment {
 
     private Double amount;
 
-    private String paymentMethod;
+    @Enumerated(EnumType.STRING)
+    private PaymentMethod paymentMethod;
 
     @Enumerated(EnumType.STRING)
     private PaymentStatus status;
@@ -36,5 +36,7 @@ public class Payment {
     private LocalDateTime timestamp;
 
     @PrePersist
-    protected void onCreate() {this.timestamp = LocalDateTime.now();}
+    protected void onCreate() {
+        this.timestamp = LocalDateTime.now();
+    }
 }
