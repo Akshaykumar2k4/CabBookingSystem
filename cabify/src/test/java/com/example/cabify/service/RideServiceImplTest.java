@@ -20,7 +20,7 @@ import java.util.List;
 import static org.mockito.ArgumentMatchers.any;
 
 @ExtendWith(MockitoExtension.class)
-public class RideServiceTest {
+public class RideServiceImplTest {
 
     @Mock
     private RideRepository rideRepository;
@@ -32,7 +32,7 @@ public class RideServiceTest {
     private DriverRepository driverRepository;
 
     @InjectMocks
-    private RideService rideService;
+    private RideServiceImpl rideServiceImpl;
 
     // TEST 1: Successful Booking
     @Test
@@ -64,7 +64,7 @@ public class RideServiceTest {
         Mockito.when(rideRepository.save(any(Ride.class))).thenReturn(mockSavedRide);
 
         // 3. Run
-        RideResponseDto result = rideService.bookRide(request);
+        RideResponseDto result = rideServiceImpl.bookRide(request);
 
         // 4. Verify
         Assertions.assertNotNull(result);
@@ -75,7 +75,7 @@ public class RideServiceTest {
     // TEST 2: Check Locations List
     @Test
     public void testGetLocations() {
-        List<String> locations = rideService.getAvailableLocations();
+        List<String> locations = rideServiceImpl.getAvailableLocations();
         Assertions.assertNotNull(locations);
         Assertions.assertTrue(locations.contains("Adyar"));
         Assertions.assertTrue(locations.contains("Guindy"));
@@ -89,7 +89,7 @@ public class RideServiceTest {
         request.setDestination("Mars");
 
         Exception exception = Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            rideService.bookRide(request);
+            rideServiceImpl.bookRide(request);
         });
 
         // Updated to match your validateAndFormat logic
@@ -115,7 +115,7 @@ public class RideServiceTest {
         Mockito.when(rideRepository.existsByUserAndStatus(mockUser, RideStatus.BOOKED)).thenReturn(false);
 
         Exception exception = Assertions.assertThrows(IllegalStateException.class, () -> {
-            rideService.bookRide(request);
+            rideServiceImpl.bookRide(request);
         });
 
         Assertions.assertTrue(exception.getMessage().contains("Driver is currently BUSY"));
@@ -145,7 +145,7 @@ public class RideServiceTest {
         Mockito.when(rideRepository.existsByUserAndStatus(mockUser, RideStatus.BOOKED)).thenReturn(true);
 
         Exception exception = Assertions.assertThrows(IllegalStateException.class, () -> {
-            rideService.bookRide(request);
+            rideServiceImpl.bookRide(request);
         });
 
         Assertions.assertTrue(exception.getMessage().contains("already have an ongoing ride"));

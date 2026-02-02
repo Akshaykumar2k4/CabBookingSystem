@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j 
-public class RideService implements IRideService {
+public class RideServiceImpl implements IRideService {
 
     @Autowired
     private RideRepository rideRepository;
