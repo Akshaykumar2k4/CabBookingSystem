@@ -8,15 +8,12 @@ import java.util.List;
 @Repository
 public interface RatingRepository extends JpaRepository<Rating, Long> {
 
-    /**
-     * Finds all ratings given to a specific user or driver.
-     * If a driver rates a user, toUserId will be the User's ID.
-     */
-    List<Rating> findByToUserId(Long toUserId);
+    // 1. Check if this PASSENGER has already rated this ride
+    boolean existsByRideIdAndPassengerId(Long rideId, Long passengerId);
 
-    /**
-     * Checks if a rating already exists for a specific ride.
-     * Prevents double-rating for the same trip.
-     */
-    boolean existsByRideIdAndFromUserId(Long rideId, Long fromUserId);
+    // 2. Find all ratings given BY a specific passenger (User History)
+    List<Rating> findByPassengerId(Long passengerId);
+
+    // 3. Find all ratings received BY a specific driver (Driver History)
+    List<Rating> findByDriverId(Long driverId);
 }

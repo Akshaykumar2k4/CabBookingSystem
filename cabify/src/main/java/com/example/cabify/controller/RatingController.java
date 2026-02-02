@@ -4,6 +4,7 @@ import com.example.cabify.dto.rating.RatingRequestDto;
 import com.example.cabify.dto.rating.RatingResponseDto;
 import com.example.cabify.dto.SuccessResponse;
 import com.example.cabify.service.IRatingService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus; // Added to match UserController style
 import org.springframework.http.ResponseEntity;
@@ -19,8 +20,10 @@ public class RatingController {
     private IRatingService ratingService;
 
     @PostMapping("submit") // Removed leading slash to match UserController style
-    public ResponseEntity<SuccessResponse<RatingResponseDto>> submitRating(@RequestBody RatingRequestDto ratingDto) {
+    public ResponseEntity<SuccessResponse<RatingResponseDto>> submitRating(@Valid @RequestBody RatingRequestDto ratingDto) {
+        System.out.println(">>> SUCCESS! Controller reached. Ride ID: " + ratingDto.getRideId());
         RatingResponseDto responseData = ratingService.submitRating(ratingDto);
+
 
         SuccessResponse<RatingResponseDto> response = new SuccessResponse<>(
                 "Rating submitted successfully",

@@ -15,27 +15,25 @@ public class Rating {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long ratingId; // [cite: 55, 64]
+    private Long ratingId;
 
     @OneToOne
     @JoinColumn(name = "ride_id", nullable = false)
-    private Ride ride; // [cite: 55, 64]
+    private Ride ride;
 
-    @Column(name = "from_user_id", nullable = false)
-    private Long fromUserId; // [cite: 55, 64]
-
-    @Column(name = "to_user_id", nullable = false)
-    private Long toUserId; // [cite: 55]
+    @Column(name = "passenger_id", nullable = false)
+    private Long passengerId;
+    @Column(name = "driver_id", nullable = false)
+    private Long driverId;
 
     @Column(nullable = false)
-    private Integer score; // [cite: 55]
+    private Integer score;
 
-    private String comments; // [cite: 55]
+    private String comments;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    // This method runs automatically before the record is inserted
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();

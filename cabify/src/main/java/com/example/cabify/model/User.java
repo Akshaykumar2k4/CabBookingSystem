@@ -23,7 +23,7 @@ public class User {
     private String email;
 
     private String name;
-    private long phone;
+    private Long phone;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
