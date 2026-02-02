@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class PaymentService {
+public class PaymentService implements IPaymentService { // <--- Implements Interface
 
     @Autowired
     private PaymentRepository paymentRepository;
@@ -23,19 +23,16 @@ public class PaymentService {
     @Autowired
     private UserRepository userRepository;
 
-    // Logic for: POST /api/payments/process
+    @Override // <--- Added Override annotation
     @Transactional
     public PaymentResponseDto processPayment(PaymentRequestDto request) {
-        //  Validate Ride
+        // Logic remains exactly the same
         Ride ride = rideRepository.findById(request.getRideId())
                 .orElseThrow(() -> new ResourceNotFoundException("Ride not found with ID: " + request.getRideId()));
 
-        //  Validate User
         User user = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + request.getUserId()));
 
-        //  Check if already paid (Prevent Double Payment)
-        // If this throws, GlobalExceptionHandler returns 409 Conflict
         if (!ride.getUser().getUserId().equals(user.getUserId())) {
             throw new SecurityException("Unauthorized: You cannot pay for another user's ride.");
         }
@@ -46,33 +43,28 @@ public class PaymentService {
             throw new IllegalStateException("Payment already made for this ride.");
         }
 
-        // Simulate Payment Gateway (As per requirement)
         boolean bankSuccess = simulateBankTransaction();
         PaymentStatus status = bankSuccess ? PaymentStatus.SUCCESS : PaymentStatus.FAILED;
 
         if (!bankSuccess) {
-            // If this throws, GlobalExceptionHandler returns 500 Internal Server Error
             throw new RuntimeException("Payment Gateway Failed");
         }
 
-        //  Save Payment
         Payment payment = new Payment();
         payment.setRide(ride);
         payment.setUser(user);
         payment.setAmount(ride.getFare());
         payment.setPaymentMethod(request.getPaymentMethod());
         payment.setStatus(status);
-        // Timestamp is handled automatically by @PrePersist in Entity
 
         paymentRepository.save(payment);
         ride.setStatus(RideStatus.PAID);
         rideRepository.save(ride);
 
-        //  Return Receipt
         return mapToDto(payment);
     }
 
-    // Logic for: GET /api/payments/receipt/{rideId}
+    @Override // <--- Added Override annotation
     public PaymentResponseDto getReceipt(Long rideId) {
         Ride ride = rideRepository.findById(rideId)
                 .orElseThrow(() -> new ResourceNotFoundException("Ride not found with ID: " + rideId));
@@ -83,9 +75,8 @@ public class PaymentService {
         return mapToDto(payment);
     }
 
-    // Helper: Simulate 3rd Party Gateway
     private boolean simulateBankTransaction() {
-        return true; // Always return true for development
+        return true;
     }
 
     private PaymentResponseDto mapToDto(Payment payment) {
