@@ -54,7 +54,7 @@ public class PaymentService implements IPaymentService { // <--- Implements Inte
         payment.setRide(ride);
         payment.setUser(user);
         payment.setAmount(ride.getFare());
-        payment.setPaymentMethod(request.getPaymentMethod());
+        payment.setPaymentMethod(PaymentMethod.valueOf(request.getPaymentMethod()));
         payment.setStatus(status);
 
         paymentRepository.save(payment);
