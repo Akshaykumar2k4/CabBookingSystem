@@ -1,0 +1,151 @@
+/* 1. Main Wrapper */
+.main-wrapper {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 2. TOP BAR STYLES (White Background) */
+.top-bar {
+  background-color: white;
+  padding: 10px 50px;
+  display: flex;
+  justify-content: space-between; /* Pushes Logo left, Contacts right */
+  align-items: center;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  z-index: 10; /* Keeps it on top */
+}
+
+.logo-text {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #333;
+  margin: 0;
+}
+
+.contact-info {
+  display: flex;
+  gap: 30px; /* Space between phone, email, location */
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.icon {
+  font-size: 1.5rem;
+  color: #ffcc00; /* Yellow Icon */
+}
+
+.contact-label {
+  font-size: 0.8rem;
+  color: #777;
+  margin: 0;
+}
+
+.contact-value {
+  font-size: 0.95rem;
+  font-weight: bold;
+  color: #333;
+  margin: 0;
+}
+
+/* 3. HERO SECTION STYLES (Dark Background) */
+.hero-section {
+  flex: 1; /* Takes up remaining height */
+  display: flex; /* Side by Side layout */
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 50px;
+  
+  /* Background: City Image with Dark Overlay */
+  background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+              url('https://images.unsplash.com/photo-1637080618498-b4a1cad84ae0?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  overflow: hidden; /* Prevents car from scrolling sideways */
+}
+
+/* 4. Left Side Text */
+.hero-text {
+  max-width: 50%;
+  color: white;
+  z-index: 2;
+}
+
+.subtitle {
+  color: #ffcc00; /* Yellow Accent */
+  font-weight: bold;
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+}
+
+.main-title {
+  font-size: 3.5rem;
+  line-height: 1.2;
+  margin-bottom: 20px;
+  font-family: sans-serif;
+}
+
+.description {
+  color: #ddd;
+  margin-bottom: 30px;
+  font-size: 1.1rem;
+}
+
+/* The Button */
+.book-btn {
+  padding: 15px 35px;
+  background-color: #ffcc00;
+  color: #000;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 1.1rem;
+  border-radius: 5px; /* Boxy corners like the image */
+  display: inline-block;
+  transition: 0.3s;
+}
+
+.book-btn:hover {
+  background-color: #e6b800;
+  transform: translateY(-2px);
+}
+
+/* 5. Right Side Car Image */
+.hero-image-container {
+  width: 50%;
+  position: relative;
+  height: 100%;
+}
+
+.taxi-img {
+  position: absolute;
+  right: -50px; /* Pulls car slightly off screen for dynamic look */
+  bottom: -20px;
+  width: 120%; /* Make it BIG */
+  max-width: 800px;
+  object-fit: contain;
+}
+
+/* 6. The Yellow Geometric Shape (Optional Background Accent) */
+.hero-section::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 40%;
+  height: 100%;
+  background: rgba(255, 204, 0, 0.1); /* Very faint yellow shape */
+  clip-path: polygon(20% 0, 100% 0, 100% 100%, 0% 100%);
+  z-index: 1;
+}
+
+.logo-section {
+  display: flex;
+  align-items: center;
+  /* We don't need gap or font sizes here anymore, the component handles it */
+}
