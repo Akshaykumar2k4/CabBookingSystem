@@ -1,21 +1,19 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import Logo from '../components/Logo'; // Import the Logo
-import './Login.css';
+import Logo from '../components/Logo'; // Import Logo
+import './Login.css'; // Re-use the new styles!
 
-const Login = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+const Register = () => {
+  const [formData, setFormData] = useState({
+    name: '', email: '', phone: '', password: ''
+  });
 
-  const handleLogin = (e) => {
-    e.preventDefault();
-    console.log("Logging in:", username);
-  };
+  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
   return (
     <div className="login-page-wrapper">
       
-      {/* 1. THE TOP BAR (Added this section) */}
+      {/* 1. THE TOP BAR */}
       <div className="top-bar">
         <div className="logo-section">
           <Logo />
@@ -47,43 +45,40 @@ const Login = () => {
         </div>
       </div>
 
-      {/* 2. THE MAIN LOGIN AREA */}
+      {/* 2. THE MAIN REGISTER AREA */}
       <div className="login-container">
         <div className="login-box">
-            <h2>Welcome Back !</h2>
-            <p>Enter your details to login</p>
-            
-            <form onSubmit={handleLogin}>
-                <div className="form-group">
-                    <label>Username</label>
-                    <input 
-                      type="text" 
-                      placeholder="Username" 
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
-                    />
-                </div>
+            <h2>Create Account</h2>
+            <p>Join our community today</p>
 
+            <form>
+                <div className="form-group">
+                    <label>Full Name</label>
+                    <input type="text" name="name" onChange={handleChange} placeholder="John Doe" />
+                </div>
+                <div className="form-group">
+                    <label>Email</label>
+                    <input type="email" name="email" onChange={handleChange} placeholder="john@mail.com" />
+                </div>
+                <div className="form-group">
+                    <label>Phone</label>
+                    <input type="tel" name="phone" onChange={handleChange} placeholder="1234567890" />
+                </div>
                 <div className="form-group">
                     <label>Password</label>
-                    <input 
-                      type="password" 
-                      placeholder="Password" 
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                    />
+                    <input type="password" name="password" onChange={handleChange} placeholder="•••••••" />
                 </div>
 
-                <button type="submit" className="login-btn">LOGIN</button>
+                <button type="submit" className="login-btn">SIGN UP</button>
             </form>
 
             <p className="redirect-text">
-                New User? <Link to="/register">Create Account</Link>
+                Already member? <Link to="/login">Login Here</Link>
             </p>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Login;
+export default Register;
