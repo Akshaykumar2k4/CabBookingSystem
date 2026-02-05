@@ -1,0 +1,79 @@
+/* src/pages/Booking.css */
+
+/* 1. Page Wrapper (Matches Login) */
+.booking-page-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  font-family: 'Segoe UI', sans-serif;
+  overflow: hidden;
+}
+
+/* 2. Main Background */
+.booking-container {
+  flex: 1;
+  display: flex;
+  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+              url('https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?q=80&w=2070&auto=format&fit=crop');
+  background-size: cover;
+  background-position: center;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+/* 3. The Glass Card */
+.booking-box {
+  background: rgba(0, 0, 0, 0.6); /* Dark Glass */
+  backdrop-filter: blur(12px);
+  padding: 40px;
+  border-radius: 15px;
+  border: 1px solid rgba(255, 204, 0, 0.2);
+  width: 100%;
+  max-width: 450px;
+  color: white;
+  text-align: center;
+}
+
+/* 4. Inputs */
+.booking-box h2 { margin-bottom: 5px; color: white; }
+.booking-box p { color: #aaa; margin-bottom: 25px; }
+
+.ride-input-group { margin-bottom: 20px; text-align: left; }
+.ride-input-group label { color: #ffcc00; display: block; margin-bottom: 8px; font-weight: bold; }
+
+.ride-select {
+  width: 100%;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid #555;
+  border-radius: 8px;
+  color: white;
+  font-size: 1rem;
+}
+.ride-select option { background-color: #333; color: white; }
+
+/* 5. Fare Display */
+.fare-display {
+  background: rgba(255, 204, 0, 0.1);
+  border: 1px dashed #ffcc00;
+  padding: 15px;
+  border-radius: 10px;
+  margin: 25px 0;
+}
+.fare-display h3 { color: #ffcc00; margin: 5px 0 0 0; font-size: 2rem; }
+
+/* 6. Button */
+.confirm-btn {
+  width: 100%;
+  padding: 15px;
+  background-color: #ffcc00;
+  color: black;
+  font-weight: 800;
+  border: none;
+  border-radius: 50px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.confirm-btn:hover { background-color: #e6b800; transform: scale(1.02); }

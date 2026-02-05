@@ -1,63 +1,63 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios'; // Import Axios
+import axios from 'axios';
 import Logo from '../components/Logo';
 import './Login.css';
 
 const Login = () => {
-  const navigate = useNavigate(); // Hook to move user
+  const navigate = useNavigate();
   
-  // Changed 'username' to 'email' to match your Java Backend
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
+  // State handles Email & Password
+  const [formData, setFormData] = useState({
+    email: '',
+    password: ''
+  });
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setLoading(true);
-
     try {
-      // 1. Send Login Request
-      const response = await axios.post('http://localhost:8081/api/users/login', {
-        email: email,       // Sending email
-        password: password  // Sending password
-      });
+      // 1. Call Backend
+      const response = await axios.post('http://localhost:8081/api/users/login', formData);
+      
+      console.log("🔥 Backend Response:", response.data);
 
-      // 2. Handle Success
-      console.log("Login Success:", response.data);
-      
-      // 3. Save the JWT Token (The "Key Card")
-      // Your backend returns { "jwt": "eyJhbGciOi..." }
-      const token = response.data.jwt; 
-      localStorage.setItem('token', token);
-      
-      alert("Login Successful! Redirecting...");
-      
-      // 4. Redirect to Home Page
-      navigate('/');
+      // 2. Smart Token Finder (Handles different backend structures)
+      const token = response.data.token || response.data.jwt || (response.data.data && response.data.data.token);
+
+      if (token) {
+          // ✅ SUCCESS
+          console.log("Login Success! Token:", token);
+          
+          // 3. CRITICAL: Save Token AND Email
+          localStorage.setItem('token', token);
+          localStorage.setItem('email', formData.email); // Booking page needs this!
+          
+          alert("Login Successful!");
+          navigate('/booking'); // Redirect to Home
+      } else {
+          // ❌ FAILURE
+          console.error("Token missing in response:", response.data);
+          alert("Login Failed: Backend did not return a valid token.");
+      }
 
     } catch (error) {
       console.error("Login Error:", error);
-      // Handle "Bad Credentials" or server errors
-      if (error.response && error.response.status === 403) {
-        alert("Invalid Email or Password. Please try again.");
-      } else {
-        alert("Login failed. Is the backend running?");
-      }
-    } finally {
-      setLoading(false);
+      alert("Login Failed: Incorrect Email or Password");
     }
   };
 
   return (
     <div className="login-page-wrapper">
       
-      {/* Top Bar */}
+      {/* 1. THE TOP BAR */}
       <div className="top-bar">
         <div className="logo-section">
           <Logo />
         </div>
-
         <div className="contact-info">
           <div className="contact-item">
             <span className="icon">📞</span>
@@ -84,21 +84,22 @@ const Login = () => {
           </div>
         </div>
       </div>
-      {/* Main Login Area */}
+
+      {/* 2. THE MAIN LOGIN AREA */}
       <div className="login-container">
         <div className="login-box">
-            <h2>Welcome Back</h2>
+            <h2>Welcome Back!</h2>
             <p>Enter your details to login</p>
             
             <form onSubmit={handleLogin}>
                 <div className="form-group">
                     <label>Email Address</label>
-                    {/* Updated Input to type="email" */}
                     <input 
                       type="email" 
-                      placeholder="john@mail.com" 
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
+                      name="email"
+                      placeholder="Enter your email" 
+                      value={formData.email}
+                      onChange={handleChange}
                       required
                     />
                 </div>
@@ -107,16 +108,15 @@ const Login = () => {
                     <label>Password</label>
                     <input 
                       type="password" 
-                      placeholder="Password" 
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
+                      name="password"
+                      placeholder="Enter your password" 
+                      value={formData.password}
+                      onChange={handleChange}
                       required
                     />
                 </div>
 
-                <button type="submit" className="login-btn" disabled={loading}>
-                  {loading ? "LOGGING IN..." : "LOGIN"}
-                </button>
+                <button type="submit" className="login-btn">LOGIN</button>
             </form>
 
             <p className="redirect-text">
