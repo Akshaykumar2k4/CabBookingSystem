@@ -59,16 +59,37 @@ const Register = () => {
     <div className="login-page-wrapper">
       
       {/* Top Bar */}
-      <div className="top-bar">
-        <div className="logo-section"><Logo /></div>
+       <div className="top-bar">
+        <div className="logo-section">
+          <Logo />
+        </div>
+
         <div className="contact-info">
           <div className="contact-item">
-             <span className="icon">📞</span>
-             <div><p className="contact-label">Call Us</p><p className="contact-value">0413-225356</p></div>
+            <span className="icon">📞</span>
+            <div>
+              <p className="contact-label">Call Us Now</p>
+              <p className="contact-value">0413-225356</p>
+            </div>
+          </div>
+
+          <div className="contact-item">
+            <span className="icon">✉️</span>
+            <div>
+              <p className="contact-label">Email Now</p>
+              <p className="contact-value">info.cabify@gmail.com</p>
+            </div>
+          </div>
+
+          <div className="contact-item">
+            <span className="icon">📍</span>
+            <div>
+              <p className="contact-label">Location</p>
+              <p className="contact-value">Chennai, TamilNadu</p>
+            </div>
           </div>
         </div>
       </div>
-
       {/* Main Form */}
       <div className="login-container">
         <div className="login-box">

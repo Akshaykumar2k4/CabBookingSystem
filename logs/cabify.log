@@ -1,0 +1,27 @@
+2026-02-05T09:32:37.266+05:30  INFO 20180 --- [cabify] [main] com.example.cabify.CabifyApplication     : Starting CabifyApplication using Java 21 with PID 20180 (C:\Project\CabBookingSystem\cabify\target\classes started by 2463402 in C:\Project\CabBookingSystem)
+2026-02-05T09:32:37.268+05:30  INFO 20180 --- [cabify] [main] com.example.cabify.CabifyApplication     : No active profile set, falling back to 1 default profile: "default"
+2026-02-05T09:32:41.209+05:30  INFO 20180 --- [cabify] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-02-05T09:32:41.209+05:30  INFO 20180 --- [cabify] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.50]
+2026-02-05T09:32:41.366+05:30  INFO 20180 --- [cabify] [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-02-05T09:32:41.747+05:30  INFO 20180 --- [cabify] [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-02-05T09:32:41.966+05:30  INFO 20180 --- [cabify] [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.39.Final
+2026-02-05T09:32:42.081+05:30  INFO 20180 --- [cabify] [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-02-05T09:32:42.797+05:30  INFO 20180 --- [cabify] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-02-05T09:32:43.441+05:30  INFO 20180 --- [cabify] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@3eb9c575
+2026-02-05T09:32:43.445+05:30  INFO 20180 --- [cabify] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-02-05T09:32:43.545+05:30  WARN 20180 --- [cabify] [main] org.hibernate.orm.deprecation            : HHH90000025: MySQL8Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-02-05T09:32:43.548+05:30  WARN 20180 --- [cabify] [main] org.hibernate.orm.deprecation            : HHH90000026: MySQL8Dialect has been deprecated; use org.hibernate.dialect.MySQLDialect instead
+2026-02-05T09:32:43.583+05:30  INFO 20180 --- [cabify] [main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 8.0
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-02-05T09:32:45.162+05:30  INFO 20180 --- [cabify] [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-02-05T09:32:47.361+05:30  WARN 20180 --- [cabify] [main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with an AuthenticationProvider bean. UserDetailsService beans will not be used by Spring Security for automatically configuring username/password login. Consider removing the AuthenticationProvider bean. Alternatively, consider using the UserDetailsService in a manually instantiated DaoAuthenticationProvider. If the current configuration is intentional, to turn off this warning, increase the logging level of 'org.springframework.security.config.annotation.authentication.configuration.InitializeUserDetailsBeanManagerConfigurer' to ERROR
+2026-02-05T09:32:47.435+05:30  WARN 20180 --- [cabify] [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-02-05T09:32:48.603+05:30  INFO 20180 --- [cabify] [main] com.example.cabify.CabifyApplication     : Started CabifyApplication in 12.149 seconds (process running for 12.876)
+2026-02-05T09:33:44.354+05:30  INFO 20180 --- [cabify] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-02-05T09:33:44.359+05:30  INFO 20180 --- [cabify] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
