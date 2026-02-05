@@ -1,4 +1,17 @@
+# Dependencies
 node_modules/
-logs/
+
+# Build Output
 dist/
+build/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Env Files
 .env
+
+# System Files
+.DS_Store
