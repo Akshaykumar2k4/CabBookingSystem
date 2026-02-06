@@ -29,7 +29,7 @@ const Logo = () => {
       <span style={{ 
         fontSize: '26px', 
         fontWeight: '700', 
-        color: '#222', 
+        color: '#fffcfcff', 
         letterSpacing: '-0.5px', // Tighter letters look more premium
         fontFamily: "'Inter', 'Segoe UI', sans-serif" 
       }}>

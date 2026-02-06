@@ -11,7 +11,7 @@
 
 /* 2. THE TOP BAR */
 .top-bar {
-  background-color: white;
+  background-color: rgb(0, 0, 0);
   padding: 10px 50px;
   display: flex;
   justify-content: space-between;

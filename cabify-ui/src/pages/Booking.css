@@ -1,6 +1,6 @@
 /* src/pages/Booking.css */
 
-/* 1. Page Wrapper (Matches Login) */
+/* 1. Page Wrapper */
 .booking-page-wrapper {
   display: flex;
   flex-direction: column;
@@ -9,7 +9,52 @@
   overflow: hidden;
 }
 
-/* 2. Main Background */
+/* 2. Top Bar (Matches Home/Login) */
+.top-bar {
+  background-color: #000;
+  padding: 15px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 3px solid #ffcc00;
+  z-index: 10;
+}
+
+.logo-section { flex: 1; }
+
+.contact-info {
+  display: flex;
+  gap: 30px;
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: white;
+}
+
+.icon {
+  font-size: 1.2rem;
+  color: #ffcc00;
+}
+
+.contact-label {
+  font-size: 0.75rem;
+  color: #888;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.contact-value {
+  font-size: 0.9rem;
+  font-weight: bold;
+  margin: 0;
+  color: #fff;
+}
+
+/* 3. Main Background */
 .booking-container {
   flex: 1;
   display: flex;
@@ -22,58 +67,140 @@
   padding: 20px;
 }
 
-/* 3. The Glass Card */
+/* 4. The Compact Glass Card */
 .booking-box {
-  background: rgba(0, 0, 0, 0.6); /* Dark Glass */
+  background: rgba(0, 0, 0, 0.75); /* Slightly darker for better contrast */
   backdrop-filter: blur(12px);
-  padding: 40px;
+  padding: 30px; /* Reduced padding for compactness */
   border-radius: 15px;
-  border: 1px solid rgba(255, 204, 0, 0.2);
+  border: 1px solid rgba(255, 204, 0, 0.3);
   width: 100%;
-  max-width: 450px;
+  max-width: 400px; /* Constrained width */
   color: white;
   text-align: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
 
-/* 4. Inputs */
-.booking-box h2 { margin-bottom: 5px; color: white; }
-.booking-box p { color: #aaa; margin-bottom: 25px; }
+/* 5. Header Section */
+.booking-header {
+  margin-bottom: 20px;
+}
 
-.ride-input-group { margin-bottom: 20px; text-align: left; }
-.ride-input-group label { color: #ffcc00; display: block; margin-bottom: 8px; font-weight: bold; }
+.booking-header h2 { 
+  margin: 0 0 5px 0; 
+  color: white; 
+  font-size: 1.6rem; 
+}
+
+.booking-header p { 
+  color: #aaa; 
+  margin: 0; 
+  font-size: 0.9rem; 
+}
+
+/* 6. Inputs */
+.ride-input-group { 
+  margin-bottom: 15px; 
+  text-align: left; 
+}
+
+.ride-input-group label { 
+  color: #ffcc00; 
+  display: block; 
+  margin-bottom: 6px; 
+  font-weight: bold; 
+  font-size: 0.85rem;
+}
 
 .ride-select {
   width: 100%;
-  padding: 12px;
+  padding: 10px;
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid #555;
   border-radius: 8px;
   color: white;
-  font-size: 1rem;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.3s;
 }
-.ride-select option { background-color: #333; color: white; }
 
-/* 5. Fare Display */
+.ride-select:focus {
+  border-color: #ffcc00;
+}
+
+.ride-select option { 
+  background-color: #222; 
+  color: white; 
+}
+
+/* 7. Fare Display */
 .fare-display {
-  background: rgba(255, 204, 0, 0.1);
+  background: rgba(255, 204, 0, 0.05);
   border: 1px dashed #ffcc00;
-  padding: 15px;
+  padding: 10px;
   border-radius: 10px;
-  margin: 25px 0;
+  margin: 20px 0;
 }
-.fare-display h3 { color: #ffcc00; margin: 5px 0 0 0; font-size: 2rem; }
 
-/* 6. Button */
+.fare-display span {
+  font-size: 0.8rem;
+  color: #ccc;
+  letter-spacing: 1px;
+}
+
+.fare-display h3 { 
+  color: #ffcc00; 
+  margin: 5px 0 0 0; 
+  font-size: 1.8rem; 
+}
+
+/* 8. Buttons */
 .confirm-btn {
   width: 100%;
-  padding: 15px;
+  padding: 12px;
   background-color: #ffcc00;
   color: black;
   font-weight: 800;
   border: none;
   border-radius: 50px;
-  font-size: 1.1rem;
+  font-size: 1rem;
   cursor: pointer;
-  transition: 0.3s;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
 }
-.confirm-btn:hover { background-color: #e6b800; transform: scale(1.02); }
+
+.confirm-btn:disabled {
+  background-color: #555;
+  color: #888;
+  cursor: not-allowed;
+}
+
+.confirm-btn:not(:disabled):hover { 
+  background-color: #e6b800; 
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(255, 204, 0, 0.3);
+}
+
+/* The "Secondary" Action - Designed to look less appealing */
+.cancel-btn {
+  width: 100%;
+  padding: 12px;
+  background: transparent; /* No enticing color */
+  border: 2px solid #444; /* Boring, dark grey border */
+  color: #888; /* Muted text, harder to read than the bright primary button */
+  font-weight: 600;
+  margin-top: 15px;
+  border-radius: 50px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Hover Effect: Turns Red (Danger/Stop) to discourage clicking */
+.cancel-btn:hover {
+  border-color: #d9534f; /* Red border */
+  color: #d9534f; /* Red text */
+  background: rgba(217, 83, 79, 0.1); /* Faint red tint */
+}

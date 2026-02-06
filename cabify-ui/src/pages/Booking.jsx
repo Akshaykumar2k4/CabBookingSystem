@@ -7,26 +7,22 @@ import './Booking.css';
 const Booking = () => {
   const navigate = useNavigate();
   
-  // --- STATE MANAGEMENT ---
   const [source, setSource] = useState('');
   const [destination, setDestination] = useState('');
   const [estimatedFare, setEstimatedFare] = useState(0);
   const [loading, setLoading] = useState(false);
   const [locations, setLocations] = useState([]);
   
-  // 🔐 IDENTITY STATE
   const [currentUserId, setCurrentUserId] = useState(null); 
-  const [userEmail, setUserEmail] = useState('');
+  // 🆕 Change: Added state for Name
+  const [userName, setUserName] = useState(''); 
 
-  // --- INITIALIZATION ---
   useEffect(() => {
     fetchLocations();
-    identifyUser(); // Auto-detect who is logged in
+    identifyUser(); 
   }, []);
 
-  // --- 1. LIVE FARE ESTIMATE (Calls Backend) ---
   useEffect(() => {
-    // Only ask backend if we have both points and they are different
     if (source && destination && source !== destination) {
         getFareEstimate();
     } else {
@@ -37,19 +33,16 @@ const Booking = () => {
   const getFareEstimate = async () => {
     try {
         const token = localStorage.getItem('token');
-        // 🚀 THE NEW CLEAN API CALL
         const response = await axios.get(`http://localhost:8081/api/rides/estimate`, {
             params: { source, destination },
             headers: { Authorization: `Bearer ${token}` }
         });
-        setEstimatedFare(response.data); // Backend does the math!
+        setEstimatedFare(response.data); 
     } catch (error) {
-        console.error("Could not fetch fare estimate:", error);
         setEstimatedFare(0);
     }
   };
 
-  // --- 2. AUTOMATIC USER ID FETCHER ---
   const identifyUser = async () => {
     const token = localStorage.getItem('token');
     const email = localStorage.getItem('email'); 
@@ -60,8 +53,6 @@ const Booking = () => {
         return;
     }
 
-    setUserEmail(email);
-
     try {
         const response = await axios.get('http://localhost:8081/api/users/profile', {
             headers: { Authorization: `Bearer ${token}` }
@@ -70,17 +61,16 @@ const Booking = () => {
         const myUser = response.data.find(u => u.email === email);
 
         if (myUser) {
-            console.log("✅ Identity Verified! My UserID is:", myUser.userId);
-            setCurrentUserId(myUser.userId);
-        } else {
-            console.error("❌ User not found in database list");
+            const realId = myUser.id || myUser.userId; 
+            setCurrentUserId(realId);
+            // 🆕 Change: Set the Name from the database object
+            setUserName(myUser.name); 
         }
     } catch (error) {
         console.error("Error fetching user identity:", error);
     }
   };
 
-  // --- 3. FETCH LOCATIONS ---
   const fetchLocations = async () => {
     try {
         const token = localStorage.getItem('token');
@@ -89,12 +79,10 @@ const Booking = () => {
         });
         setLocations(response.data);
     } catch (error) {
-        // Fallback if backend location API fails
         setLocations(["Adyar", "AnnaNagar", "Guindy", "Marina", "Sholinganallur", "Tambaram", "TNagar", "Velachery"]);
     }
   };
 
-  // --- 4. BOOKING FUNCTION ---
   const handleBookRide = async () => {
     if (!source || !destination) { alert("Please select locations"); return; }
     
@@ -110,8 +98,7 @@ const Booking = () => {
         const response = await axios.post('http://localhost:8081/api/rides/book', {
             source: source,
             destination: destination,
-            userId: currentUserId, // 👈 Uses the auto-detected ID
-            driverId: 2            
+            userId: currentUserId 
         }, {
             headers: { Authorization: `Bearer ${token}` }
         });
@@ -127,20 +114,37 @@ const Booking = () => {
         setLoading(false);
     }
   };
-
+  // Check if both are selected AND they are the same
+    const isInvalidRoute = source && destination && source === destination;
   return (
     <div className="booking-page-wrapper">
+      
+      {/* 1. TOP BAR */}
       <div className="top-bar">
         <div className="logo-section"><Logo /></div>
         <div className="contact-info">
-            <button className="login-btn" style={{width:'auto'}} onClick={() => navigate('/')}>Home</button>
+          <div className="contact-item">
+            <span className="icon">📞</span>
+            <div><p className="contact-label">Call Us</p><p className="contact-value">0413-225356</p></div>
+          </div>
+          <div className="contact-item">
+            <span className="icon">✉️</span>
+            <div><p className="contact-label">Email</p><p className="contact-value">info@cabify.com</p></div>
+          </div>
+          <div className="contact-item">
+            <span className="icon">📍</span>
+            <div><p className="contact-label">Location</p><p className="contact-value">Chennai</p></div>
+          </div>
         </div>
       </div>
+
+      {/* 2. MAIN BOOKING AREA */}
       <div className="booking-container">
         <div className="booking-box">
             <div className="booking-header">
                 <h2>Request a Ride</h2>
-                <p>Welcome, {userEmail}</p>
+                {/* 🆕 Change: Display Name instead of Email */}
+                <p>Welcome, {userName || 'Traveler'}</p>
             </div>
 
             <div className="ride-input-group">
@@ -158,14 +162,22 @@ const Booking = () => {
                     {locations.map((loc, i) => <option key={i} value={loc}>{loc}</option>)}
                 </select>
             </div>
-
+            {isInvalidRoute && (
+            <p style={{ color: '#ff4444', fontSize: '0.85rem', marginTop: '-10px', marginBottom: '10px' }}>
+            ⚠️ Pickup and Drop location cannot be the same.
+            </p>
+            )}
             <div className="fare-display">
                 <span>ESTIMATED FARE</span>
                 <h3>₹ {estimatedFare > 0 ? estimatedFare.toFixed(2) : '--'}</h3>
             </div>
 
-            <button className="confirm-btn" onClick={handleBookRide} disabled={loading || estimatedFare === 0}>
+            <button className="confirm-btn" onClick={handleBookRide} disabled={loading || estimatedFare === 0 || isInvalidRoute}>
                 {loading ? "BOOKING..." : "CONFIRM RIDE"}
+            </button>
+            
+            <button className="cancel-btn" onClick={() => navigate('/')}>
+                Cancel & Go Home
             </button>
         </div>
       </div>
