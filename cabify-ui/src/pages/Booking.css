@@ -20,6 +20,30 @@
   z-index: 10;
 }
 
+/* Nav Links Styling */
+.nav-links {
+  display: flex;
+  gap: 15px;
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
+  padding-right: 25px;
+}
+
+.nav-btn {
+  background: transparent;
+  border: 1px solid #ffcc00;
+  color: #ffcc00;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.nav-btn:hover {
+  background: #ffcc00;
+  color: #000;
+}
+
 .logo-section { flex: 1; }
 
 .contact-info {

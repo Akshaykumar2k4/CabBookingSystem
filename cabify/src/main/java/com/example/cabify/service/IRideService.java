@@ -15,4 +15,6 @@ public interface IRideService {
     List<String> getAvailableLocations();
 
     double calculateFare(String source, String destination);
+
+    List<RideResponseDto> getMyRides(String email);
 }
