@@ -1,4 +1,5 @@
 package com.example.cabify.service;
+
 import com.example.cabify.dto.ride.RideRequestDto;
 import com.example.cabify.dto.ride.RideResponseDto;
 import com.example.cabify.exception.ResourceNotFoundException;
@@ -31,8 +32,6 @@ public class RideServiceImpl implements IRideService {
     private static final Map<String, Double> routeDistances = new HashMap<>();
     static {
         // --- 8 MAJOR HUBS
-        // Locations: Adyar, Anna Nagar, Guindy, Marina, Sholinganallur, Tambaram, TNagar, Velachery
-        // 1. Adyar Connections
         routeDistances.put("Adyar-AnnaNagar", 14.0);
         routeDistances.put("Adyar-Guindy", 7.0);
         routeDistances.put("Adyar-Marina", 8.0);
@@ -85,19 +84,11 @@ public class RideServiceImpl implements IRideService {
     }
 
     @Override
-    @Transactional
-    public RideResponseDto bookRide(RideRequestDto request) {
-        log.info("Booking request received - User ID: {}, Driver ID: {}, Route: {} to {}",
-                request.getUserId(), request.getDriverId(), request.getSource(), request.getDestination());
-
-        String src = validateAndFormat(request.getSource());
-        String dest = validateAndFormat(request.getDestination());
+    public double calculateFare(String source, String destination) {
+        String src = validateAndFormat(source);
+        String dest = validateAndFormat(destination);
         String routeKey = (src.compareTo(dest) < 0) ? src + "-" + dest : dest + "-" + src;
 
-        if (!routeDistances.containsKey(routeKey)) {
-            log.warn("Booking failed: Invalid route {} to {}", src, dest);
-            throw new IllegalArgumentException("Service is not available for this route: " + src + " to " + dest);
-        }
         Double distance = routeDistances.getOrDefault(routeKey, 15.0);
 
         double ratePerKm;
@@ -110,7 +101,23 @@ public class RideServiceImpl implements IRideService {
         } else {
             ratePerKm = 10.0;
         }
-        double totalFare = distance * ratePerKm;
+        return Math.round((distance * ratePerKm) * 100.0) / 100.0;
+    }
+
+    @Override
+    @Transactional
+    public RideResponseDto bookRide(RideRequestDto request) {
+        // ⚠️ FIXED: Removed driverId from logs
+        log.info("Booking request received - User ID: {}, Route: {} to {}",
+                request.getUserId(), request.getSource(), request.getDestination());
+
+        String src = validateAndFormat(request.getSource());
+        String dest = validateAndFormat(request.getDestination());
+        
+        double totalFare = calculateFare(src, dest);
+        
+        String routeKey = (src.compareTo(dest) < 0) ? src + "-" + dest : dest + "-" + src;
+        Double distance = routeDistances.getOrDefault(routeKey, 15.0); 
 
         User user = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> {
@@ -118,19 +125,19 @@ public class RideServiceImpl implements IRideService {
                     return new ResourceNotFoundException("User not found with ID: " + request.getUserId());
                 });
 
-        Driver driver = driverRepository.findById(request.getDriverId())
+        // ⚠️ FIXED: Auto-Assign Driver (Use findFirstByStatus instead of findById)
+        Driver driver = driverRepository.findFirstByStatus(DriverStatus.AVAILABLE)
                 .orElseThrow(() -> {
-                    log.error("Booking failed: Driver ID {} not found", request.getDriverId());
-                    return new ResourceNotFoundException("Driver not found with ID: " + request.getDriverId());
+                    log.error("Booking failed: No drivers available");
+                    return new ResourceNotFoundException("No cabs are currently available! Please try again later.");
                 });
+        
         if (rideRepository.existsByUserAndStatus(user, RideStatus.BOOKED)) {
             log.warn("Booking failed: User ID {} already has an ongoing ride", request.getUserId());
             throw new IllegalStateException("You already have an ongoing ride! Complete it before booking a new one.");
         }
-        if (driver.getStatus() != DriverStatus.AVAILABLE) {
-            log.warn("Booking failed: Driver {} is currently {}", request.getDriverId(), driver.getStatus());
-            throw new IllegalStateException("Driver is currently " + driver.getStatus() + " and cannot accept rides.");
-        }
+        
+        // Removed the check for driver status because we specifically fetched an AVAILABLE one above.
 
         // Save Ride
         Ride ride = new Ride();
@@ -144,7 +151,7 @@ public class RideServiceImpl implements IRideService {
 
         Ride savedRide = rideRepository.save(ride);
 
-        //  Lock Driver
+        // Lock Driver
         driver.setStatus(DriverStatus.BUSY);
         driverRepository.save(driver);
 
@@ -157,16 +164,16 @@ public class RideServiceImpl implements IRideService {
     @Override
     @Transactional
     public RideResponseDto endRide(Long rideId) {
-        log.info("Request to end Ride ID: {}", rideId); // Restored Log
+        log.info("Request to end Ride ID: {}", rideId); 
 
         Ride ride = rideRepository.findById(rideId)
                 .orElseThrow(() -> {
-                    log.error("End Ride failed: Ride ID {} not found", rideId); // Restored Log
+                    log.error("End Ride failed: Ride ID {} not found", rideId); 
                     return new ResourceNotFoundException("Ride not found with ID: " + rideId);
                 });
 
         if (ride.getStatus() == RideStatus.COMPLETED) {
-            log.warn("End Ride failed: Ride ID {} is already COMPLETED", rideId); // Restored Log
+            log.warn("End Ride failed: Ride ID {} is already COMPLETED", rideId); 
             throw new IllegalStateException("Ride is already completed!");
         }
 
@@ -180,7 +187,7 @@ public class RideServiceImpl implements IRideService {
         driver.setStatus(DriverStatus.AVAILABLE);
         driverRepository.save(driver);
 
-        log.info("Ride ID {} completed successfully at {}", rideId, ride.getEndTime()); // Restored Log
+        log.info("Ride ID {} completed successfully at {}", rideId, ride.getEndTime()); 
         return mapToDto(ride);
     }
 
@@ -224,10 +231,7 @@ public class RideServiceImpl implements IRideService {
     }
 
     private String validateAndFormat(String input) {
-        // Get all valid locations (Adyar, Guindy, TNagar...)
         List<String> validLocations = getAvailableLocations();
-
-        // Find the one that matches, ignoring case
         return validLocations.stream()
                 .filter(loc -> loc.equalsIgnoreCase(input))
                 .findFirst()

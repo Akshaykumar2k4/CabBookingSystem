@@ -13,4 +13,6 @@ public interface IRideService {
     List<RideResponseDto> getMyRides(Long userId);
 
     List<String> getAvailableLocations();
+
+    double calculateFare(String source, String destination);
 }

@@ -14,7 +14,6 @@ const Booking = () => {
   const [locations, setLocations] = useState([]);
   
   const [currentUserId, setCurrentUserId] = useState(null); 
-  // 🆕 Change: Added state for Name
   const [userName, setUserName] = useState(''); 
 
   useEffect(() => {
@@ -37,7 +36,8 @@ const Booking = () => {
             params: { source, destination },
             headers: { Authorization: `Bearer ${token}` }
         });
-        setEstimatedFare(response.data); 
+        // ⚠️ FIXED: Robust check (handles both Wrapped and Raw responses)
+        setEstimatedFare(response.data.data || response.data); 
     } catch (error) {
         setEstimatedFare(0);
     }
@@ -63,7 +63,6 @@ const Booking = () => {
         if (myUser) {
             const realId = myUser.id || myUser.userId; 
             setCurrentUserId(realId);
-            // 🆕 Change: Set the Name from the database object
             setUserName(myUser.name); 
         }
     } catch (error) {
@@ -77,8 +76,10 @@ const Booking = () => {
         const response = await axios.get('http://localhost:8081/api/rides/locations', {
             headers: { Authorization: `Bearer ${token}` }
         });
-        setLocations(response.data);
+        // ⚠️ FIXED: Check for .data.data (Wrapper) OR .data (Raw List) to prevent undefined error
+        setLocations(response.data.data || response.data || []);
     } catch (error) {
+        console.error("Error fetching locations", error);
         setLocations(["Adyar", "AnnaNagar", "Guindy", "Marina", "Sholinganallur", "Tambaram", "TNagar", "Velachery"]);
     }
   };
@@ -103,8 +104,10 @@ const Booking = () => {
             headers: { Authorization: `Bearer ${token}` }
         });
 
-        const finalFare = response.data.data.fare;
-        alert(`Ride Confirmed!\nAmount: ₹${finalFare}\nDriver: ${response.data.data.driverName}`);
+        // ⚠️ FIXED: Access .data.data for the wrapped response
+        const responseData = response.data.data || response.data;
+        const finalFare = responseData.fare;
+        alert(`Ride Confirmed!\nAmount: ₹${finalFare}\nDriver: ${responseData.driverName}`);
         navigate('/'); 
 
     } catch (error) {
@@ -114,8 +117,9 @@ const Booking = () => {
         setLoading(false);
     }
   };
-  // Check if both are selected AND they are the same
-    const isInvalidRoute = source && destination && source === destination;
+
+  const isInvalidRoute = source && destination && source === destination;
+
   return (
     <div className="booking-page-wrapper">
       
@@ -143,7 +147,6 @@ const Booking = () => {
         <div className="booking-box">
             <div className="booking-header">
                 <h2>Request a Ride</h2>
-                {/* 🆕 Change: Display Name instead of Email */}
                 <p>Welcome, {userName || 'Traveler'}</p>
             </div>
 
@@ -151,7 +154,8 @@ const Booking = () => {
                 <label>Pickup Location</label>
                 <select className="ride-select" value={source} onChange={(e) => setSource(e.target.value)}>
                     <option value="">Select Pickup...</option>
-                    {locations.map((loc, i) => <option key={i} value={loc}>{loc}</option>)}
+                    {/* ⚠️ FIXED: Added (locations || []) check to prevent map crash */}
+                    {(locations || []).map((loc, i) => <option key={i} value={loc}>{loc}</option>)}
                 </select>
             </div>
 
@@ -159,7 +163,8 @@ const Booking = () => {
                 <label>Drop Location</label>
                 <select className="ride-select" value={destination} onChange={(e) => setDestination(e.target.value)}>
                     <option value="">Select Drop...</option>
-                    {locations.map((loc, i) => <option key={i} value={loc}>{loc}</option>)}
+                    {/* ⚠️ FIXED: Added (locations || []) check to prevent map crash */}
+                    {(locations || []).map((loc, i) => <option key={i} value={loc}>{loc}</option>)}
                 </select>
             </div>
             {isInvalidRoute && (
@@ -169,7 +174,8 @@ const Booking = () => {
             )}
             <div className="fare-display">
                 <span>ESTIMATED FARE</span>
-                <h3>₹ {estimatedFare > 0 ? estimatedFare.toFixed(2) : '--'}</h3>
+                {/* Ensure estimatedFare is a number before calling toFixed */}
+                <h3>₹ {Number(estimatedFare) > 0 ? Number(estimatedFare).toFixed(2) : '--'}</h3>
             </div>
 
             <button className="confirm-btn" onClick={handleBookRide} disabled={loading || estimatedFare === 0 || isInvalidRoute}>

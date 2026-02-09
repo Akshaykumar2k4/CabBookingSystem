@@ -8,11 +8,8 @@ import lombok.Data;
 public class RideRequestDto {
 
     @NotNull(message = "User ID is required")
-    private Long userId;       // Changed from 'long' to 'Long' to allow @NotNull check
-
-    @NotNull(message = "Driver ID is required")
-    private Long driverId;
-
+    private Long userId;       
+    
     @NotBlank(message = "Source location is required")
     private String source;
 

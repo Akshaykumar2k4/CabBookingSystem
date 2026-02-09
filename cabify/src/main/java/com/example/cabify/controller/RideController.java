@@ -68,4 +68,18 @@ public class RideController {
     public ResponseEntity<List<String>> getLocations() {
         return new ResponseEntity<>(rideService.getAvailableLocations(), HttpStatus.OK);
     }
+
+    // 🆕 ESTIMATE FARE (Wrapped in SuccessResponse)
+    @GetMapping("/estimate")
+    public ResponseEntity<SuccessResponse<Double>> estimateFare(@RequestParam String source, @RequestParam String destination) {
+        Double fare = rideService.calculateFare(source, destination);
+
+        SuccessResponse<Double> successResponse = new SuccessResponse<>(
+                "Fare estimated successfully",
+                HttpStatus.OK.value(),
+                fare
+        );
+
+        return new ResponseEntity<>(successResponse, HttpStatus.OK);
+    }
 }
