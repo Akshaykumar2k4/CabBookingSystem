@@ -230,6 +230,16 @@ public class RideServiceImpl implements IRideService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public List<RideResponseDto> getMyRides(String email) {
+        // 1. Find User by Email (Business Logic)
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
+
+        // 2. Reuse existing logic to get rides
+        return getMyRides(user.getUserId());
+    }
+
     private String validateAndFormat(String input) {
         List<String> validLocations = getAvailableLocations();
         return validLocations.stream()

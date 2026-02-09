@@ -108,7 +108,7 @@ const Booking = () => {
         const responseData = response.data.data || response.data;
         const finalFare = responseData.fare;
         alert(`Ride Confirmed!\nAmount: ₹${finalFare}\nDriver: ${responseData.driverName}`);
-        navigate('/'); 
+        navigate('/my-rides'); 
 
     } catch (error) {
         console.error("Booking Error:", error);
@@ -127,6 +127,10 @@ const Booking = () => {
       <div className="top-bar">
         <div className="logo-section"><Logo /></div>
         <div className="contact-info">
+          <div className="nav-links">
+            <button className="nav-btn" onClick={() => navigate('/booking')}>New Ride</button>
+            <button className="nav-btn" onClick={() => navigate('/my-rides')}>My Rides</button>
+          </div>
           <div className="contact-item">
             <span className="icon">📞</span>
             <div><p className="contact-label">Call Us</p><p className="contact-value">0413-225356</p></div>

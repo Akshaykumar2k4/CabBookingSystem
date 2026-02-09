@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -65,9 +66,15 @@ public class RideController {
     }
 
     @GetMapping("/locations")
-    public ResponseEntity<List<String>> getLocations() {
-        return new ResponseEntity<>(rideService.getAvailableLocations(), HttpStatus.OK);
-    }
+public ResponseEntity<SuccessResponse<List<String>>> getLocations() {
+    List<String> locations = rideService.getAvailableLocations();
+    SuccessResponse<List<String>> response = new SuccessResponse<>(
+            "Locations fetched successfully",
+            HttpStatus.OK.value(),
+            locations
+    );
+    return ResponseEntity.ok(response);
+}
 
     // 🆕 ESTIMATE FARE (Wrapped in SuccessResponse)
     @GetMapping("/estimate")
@@ -81,5 +88,22 @@ public class RideController {
         );
 
         return new ResponseEntity<>(successResponse, HttpStatus.OK);
+    }
+
+    @GetMapping("/history")
+    public ResponseEntity<SuccessResponse<List<RideResponseDto>>> getMyHistory(Principal principal) {
+        // 1. Get the email from the secure Token
+        String email = principal.getName();
+        
+        // 2. Ask the Service for the rides
+        List<RideResponseDto> rides = rideService.getMyRides(email);
+
+        // 3. Return Success Response
+        SuccessResponse<List<RideResponseDto>> response = new SuccessResponse<>(
+                "User history fetched successfully",
+                HttpStatus.OK.value(),
+                rides
+        );
+        return ResponseEntity.ok(response);
     }
 }
