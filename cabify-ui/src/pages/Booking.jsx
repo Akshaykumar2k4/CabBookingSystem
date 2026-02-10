@@ -120,6 +120,14 @@ const Booking = () => {
 
   const isInvalidRoute = source && destination && source === destination;
 
+  const handleLogout = () => {
+    if (window.confirm("Are you sure you want to logout?")) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('email');
+      navigate('/login');
+    }
+  };
+
   return (
     <div className="booking-page-wrapper">
       
@@ -128,8 +136,10 @@ const Booking = () => {
         <div className="logo-section"><Logo /></div>
         <div className="contact-info">
           <div className="nav-links">
+
             <button className="nav-btn" onClick={() => navigate('/booking')}>New Ride</button>
             <button className="nav-btn" onClick={() => navigate('/my-rides')}>My Rides</button>
+            <button className="logout-btn" onClick={handleLogout}>Logout</button>
           </div>
           <div className="contact-item">
             <span className="icon">📞</span>
