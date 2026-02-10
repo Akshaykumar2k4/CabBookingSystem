@@ -28,7 +28,16 @@ const MyRides = () => {
       const response = await axios.get('http://localhost:8081/api/rides/history', {
         headers: { Authorization: `Bearer ${token}` }
       });
-      setRides(response.data.data || response.data || []);
+      
+      // Get the raw data from response
+      const rawData = response.data.data || response.data || [];
+      
+      // FIX: Sort rides so the newest (most recent bookingTime) appears first
+      const sortedRides = [...rawData].sort((a, b) => 
+        new Date(b.bookingTime) - new Date(a.bookingTime)
+      );
+
+      setRides(sortedRides);
     } catch (err) {
       console.error("Error fetching history:", err);
       if (err.response && (err.response.status === 401 || err.response.status === 403)) {
@@ -46,22 +55,6 @@ const MyRides = () => {
     setShowPaymentModal(true);
   };
 
-  const handleEndRide = async (rideId) => {
-    if (!window.confirm("Are you sure you want to end this ride?")) return;
-    try {
-      const token = localStorage.getItem('token');
-      // Use PUT and the correct URL structure
-      await axios.put(`http://localhost:8081/api/rides/${rideId}/end`, {}, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      alert("Ride Completed Successfully! ✅");
-      fetchHistory(); 
-    } catch (err) {
-      console.error(err);
-      alert(err.response?.data?.message || "Failed to end ride.");
-    }
-  };
-
   const handleLogout = () => {
     if (window.confirm("Are you sure you want to logout?")) {
       localStorage.removeItem('token');
@@ -73,17 +66,16 @@ const MyRides = () => {
   const handleConfirmPayment = async () => {
     if (!selectedRide) return;
     
-    setIsProcessing(true); // Start loading spinner
+    setIsProcessing(true);
     try {
       const token = localStorage.getItem('token');
-      // This is your actual API call to the Backend
       await axios.put(`http://localhost:8081/api/rides/${selectedRide.rideId}/end`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
       alert("Payment Successful! Ride Completed. ✅");
-      setShowPaymentModal(false); // Close modal
-      fetchHistory(); // Refresh the list
+      setShowPaymentModal(false);
+      fetchHistory(); // This will now refresh and keep the newest on top
     } catch (err) {
       console.error(err);
       alert("Payment Failed. Please try again.");
@@ -95,7 +87,7 @@ const MyRides = () => {
   return (
     <div className="my-rides-wrapper">
       
-      {/* 1. TOP BAR (Matches Login Page) */}
+      {/* TOP BAR */}
       <div className="top-bar">
         <div className="logo-section" onClick={() => navigate('/')} style={{cursor: 'pointer'}}>
           <Logo />
@@ -104,7 +96,7 @@ const MyRides = () => {
         <div className="nav-links">
             <button className="logout-btn" onClick={handleLogout}>Logout</button>
           </div>
-        {/* Contact Info Section */}
+
         <div className="contact-info">
           <div className="contact-item">
             <span className="icon">📞</span>
@@ -130,10 +122,8 @@ const MyRides = () => {
         </div>
       </div>
 
-      {/* 2. MAIN CONTENT AREA (Background Image) */}
+      {/* MAIN CONTENT */}
       <div className="rides-bg-container">
-        
-        {/* 3. GLASS BOX (Holds the list) */}
         <div className="glass-history-box">
           <h2>My Ride History</h2>
           
@@ -152,7 +142,7 @@ const MyRides = () => {
               <div key={ride.rideId} className="glass-ride-card">
                 <div className="card-header">
                   <span className="date">
-                    📅 {new Date(ride.bookingTime).toLocaleDateString()}
+                    📅 {new Date(ride.bookingTime).toLocaleDateString()} at {new Date(ride.bookingTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                   </span>
                   <span className={`status-badge ${ride.status.toLowerCase()}`}>
                     {ride.status}
@@ -186,7 +176,6 @@ const MyRides = () => {
                   </div>
                 </div>
 
-                {/* End Ride Button */}
                 {(ride.status === 'BOOKED' || ride.status === 'IN_PROGRESS') && (
                   <button 
                     className="glass-end-btn"
@@ -200,7 +189,8 @@ const MyRides = () => {
           </div>
         </div>
       </div>
-      {/* 🧾 THE PAYMENT MODAL OVERLAY */}
+
+      {/* PAYMENT MODAL */}
       {showPaymentModal && selectedRide && (
         <div className="modal-overlay">
           <div className="payment-modal">
