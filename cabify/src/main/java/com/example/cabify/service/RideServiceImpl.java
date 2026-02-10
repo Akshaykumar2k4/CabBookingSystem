@@ -1,21 +1,28 @@
 package com.example.cabify.service;
 
-import com.example.cabify.dto.ride.RideRequestDto;
-import com.example.cabify.dto.ride.RideResponseDto;
-import com.example.cabify.exception.ResourceNotFoundException;
-import com.example.cabify.model.*;
-import com.example.cabify.repository.DriverRepository;
-import com.example.cabify.repository.RideRepository;
-import com.example.cabify.repository.UserRepository;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.example.cabify.dto.ride.RideRequestDto;
+import com.example.cabify.dto.ride.RideResponseDto;
+import com.example.cabify.exception.ResourceNotFoundException;
+import com.example.cabify.model.Driver;
+import com.example.cabify.model.DriverStatus;
+import com.example.cabify.model.Ride;
+import com.example.cabify.model.RideStatus;
+import com.example.cabify.model.User;
+import com.example.cabify.repository.DriverRepository;
+import com.example.cabify.repository.RideRepository;
+import com.example.cabify.repository.UserRepository;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j 
@@ -178,7 +185,7 @@ public class RideServiceImpl implements IRideService {
         }
 
         // Update Status
-        ride.setStatus(RideStatus.COMPLETED);
+        ride.setStatus(RideStatus.PAID);
         ride.setEndTime(LocalDateTime.now());
         rideRepository.save(ride);
 
