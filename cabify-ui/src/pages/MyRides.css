@@ -194,3 +194,20 @@
   font-weight: bold;
   cursor: pointer;
 }
+.logout-btn {
+  background: transparent;
+  border: 1px solid #ff4444; /* Red border to signal "Exit" */
+  color: #ff4444;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+  margin-left: 10px;
+}
+
+.logout-btn:hover {
+  background: #ff4444;
+  color: white;
+  box-shadow: 0 0 10px rgba(255, 68, 68, 0.4);
+}

@@ -54,6 +54,14 @@ const MyRides = () => {
     }
   };
 
+  const handleLogout = () => {
+    if (window.confirm("Are you sure you want to logout?")) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('email');
+      navigate('/login');
+    }
+  };
+
   return (
     <div className="my-rides-wrapper">
       
@@ -63,6 +71,9 @@ const MyRides = () => {
           <Logo />
         </div>
         
+        <div className="nav-links">
+            <button className="logout-btn" onClick={handleLogout}>Logout</button>
+          </div>
         {/* Contact Info Section */}
         <div className="contact-info">
           <div className="contact-item">
