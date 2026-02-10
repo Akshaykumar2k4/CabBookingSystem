@@ -124,16 +124,43 @@
   color: #ccc;
 }
 
+/* 1. The General Badge Style */
 .status-badge {
-  padding: 3px 10px;
-  border-radius: 12px;
+  padding: 4px 12px;
+  border-radius: 50px; /* Pill shape */
   font-size: 0.75rem;
   font-weight: bold;
   text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
-.status-badge.booked { background: #1976d2; color: white; }
-.status-badge.in_progress { background: #f57c00; color: white; }
-.status-badge.completed { background: #2e7d32; color: white; }
+
+/* 2. PAID - Vibrant Green with a slight glow */
+.status-badge.paid {
+  background-color: rgba(46, 125, 50, 0.2); /* Light green bg */
+  color: #4caf50; /* Bright green text */
+  border: 1px solid #4caf50;
+  box-shadow: 0 0 8px rgba(76, 175, 80, 0.3);
+}
+
+/* 3. COMPLETED - Professional Slate Blue */
+.status-badge.completed {
+  background-color: rgba(33, 150, 243, 0.2); /* Light blue bg */
+  color: #2196f3; /* Blue text */
+  border: 1px solid #2196f3;
+}
+
+/* 4. Keep your others for consistency */
+.status-badge.booked {
+  background-color: rgba(255, 204, 0, 0.2);
+  color: #ffcc00;
+  border: 1px solid #ffcc00;
+}
+
+.status-badge.in_progress {
+  background-color: rgba(255, 152, 0, 0.2);
+  color: #ff9800;
+  border: 1px solid #ff9800;
+}
 
 .route-row {
   display: flex;
