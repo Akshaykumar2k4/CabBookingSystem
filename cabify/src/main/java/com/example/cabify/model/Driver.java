@@ -18,13 +18,18 @@ public class Driver {
 
     private String name;
 
+    @Column(unique = true, nullable = false)
+    private String email; // 🚀 Added for Login
+
+    private String password; // 🚀 Added for Login
+
     private String phone;
 
     @Column(unique = true, nullable = false)
     private String licenseNumber;
 
-    private String vehicleDetails; // e.g., "Toyota Prius - KA05MX1234"
+    private String vehicleDetails; 
 
     @Enumerated(EnumType.STRING)
-    private DriverStatus status;
+    private DriverStatus status = DriverStatus.AVAILABLE; // Default status
 }

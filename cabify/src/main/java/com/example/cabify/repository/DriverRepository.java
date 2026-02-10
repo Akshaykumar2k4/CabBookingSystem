@@ -20,4 +20,5 @@ public interface DriverRepository extends JpaRepository<Driver, Long> {
     boolean existsByLicenseNumber(String licenseNumber);
 
     Optional<Driver> findFirstByStatus(DriverStatus available);
-}
+
+    Optional<Driver> findByEmail(String email);}

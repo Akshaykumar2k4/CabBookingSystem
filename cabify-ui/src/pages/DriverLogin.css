@@ -1,0 +1,139 @@
+/* 1. Main Wrapper */
+.driver-login-page-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  font-family: 'Segoe UI', sans-serif;
+  overflow: hidden;
+}
+
+/* 2. THE TOP BAR */
+.top-bar {
+  background-color: rgb(0, 0, 0);
+  padding: 10px 50px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+  z-index: 10;
+}
+
+.contact-info { display: flex; gap: 30px; }
+.contact-item { display: flex; align-items: center; gap: 10px; }
+
+/* Changed to Electric Blue */
+.icon {
+  font-size: 1.5rem;
+  color: #00d2ff; 
+}
+
+.contact-label { font-size: 0.8rem; color: #777; margin: 0; }
+.contact-value { font-size: 0.95rem; font-weight: bold; color: #fff; margin: 0; }
+
+/* 3. The Main Background Area */
+.login-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+  /* Changed to a Driver-centric background */
+    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+              url('https://images.unsplash.com/photo-1637080618498-b4a1cad84ae0?q=80&w=2070&auto=format&fit=crop');
+  background-size: cover;
+  background-position: center;
+  padding: 20px;
+}
+
+/* 4. THE COMPACT GLASS FORM */
+.login-box {
+  background: rgba(10, 25, 41, 0.7); /* Deeper blue-tinted glass */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 30px 40px; 
+  border-radius: 15px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(0, 210, 255, 0.2); /* Blue border glow */
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+  color: white;
+}
+
+.login-box h2 { color: white; margin-bottom: 5px; font-size: 1.8rem; }
+.login-box p { color: #aaa; margin-bottom: 20px; font-size: 0.95rem; }
+
+.form-group { margin-bottom: 15px; text-align: left; }
+
+/* Label color changed to Blue */
+.form-group label { 
+  color: #00d2ff; 
+  display: block; 
+  margin-bottom: 5px; 
+  font-weight: bold; 
+  font-size: 0.9rem;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 10px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 5px;
+  color: white;
+  font-size: 1rem;
+}
+
+/* Focus color changed to Blue */
+.form-group input:focus {
+  outline: none;
+  border-color: #00d2ff;
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* 6. Button - Changed to Blue */
+.login-btn {
+  width: 100%;
+  padding: 12px;
+  background-color: #00d2ff;
+  color: #000;
+  border: none;
+  border-radius: 50px;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: 0.3s;
+  margin-top: 10px;
+}
+
+.login-btn:hover { 
+  background-color: #00b4db; 
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 210, 255, 0.4);
+}
+
+/* Link color changed to Blue */
+.redirect-text { margin-top: 15px; font-size: 0.9rem; }
+.redirect-text a { color: #00d2ff; text-decoration: none; font-weight: bold; }
+
+/* Update the Top Bar specifically for the Driver Portal */
+.top-bar.driver-theme {
+  border-bottom: 3px solid #00d2ff; /* The Electric Blue line you asked for */
+  background-color: #000;
+}
+
+/* If your Logo is text or a SVG, we can color it here */
+.top-bar.driver-theme .logo-text, 
+.top-bar.driver-theme .logo-icon {
+  color: #00d2ff !important;
+}
+
+/* If your Logo is an <img>, use a filter to give it a blue glow/tint */
+.top-bar.driver-theme img {
+  filter: drop-shadow(0 0 5px rgba(0, 210, 255, 0.5));
+}
+
+/* Ensure the contact icons also match the blue theme */
+.top-bar.driver-theme .icon {
+  color: #00d2ff !important;
+}

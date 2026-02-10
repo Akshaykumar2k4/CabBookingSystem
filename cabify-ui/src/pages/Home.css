@@ -6,28 +6,20 @@
   flex-direction: column;
 }
 
-/* 2. TOP BAR STYLES (White Background) */
+/* 2. TOP BAR STYLES */
 .top-bar {
-  background-color: rgb(0, 0, 0);
+  background-color: #000;
   padding: 10px 50px;
   display: flex;
-  justify-content: space-between; /* Pushes Logo left, Contacts right */
+  justify-content: space-between;
   align-items: center;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-  z-index: 10; /* Keeps it on top */
-}
-
-
-.logo-text {
-  font-size: 2rem;
-  font-weight: 800;
-  color: #333;
-  margin: 0;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+  z-index: 10;
 }
 
 .contact-info {
   display: flex;
-  gap: 30px; /* Space between phone, email, location */
+  gap: 30px;
 }
 
 .contact-item {
@@ -38,115 +30,161 @@
 
 .icon {
   font-size: 1.5rem;
-  color: #ffcc00; /* Yellow Icon */
+  color: #ffcc00;
 }
 
 .contact-label {
-  font-size: 0.8rem;
-  color: #777;
+  font-size: 0.75rem;
+  color: #aaa;
   margin: 0;
 }
 
 .contact-value {
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: bold;
-  color: #333;
+  color: #fff;
   margin: 0;
 }
 
-/* 3. HERO SECTION STYLES (Dark Background) */
-.hero-section {
-  flex: 1; /* Takes up remaining height */
-  display: flex; /* Side by Side layout */
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 50px;
-  
-  /* Background: City Image with Dark Overlay */
-  background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
-              url('https://images.unsplash.com/photo-1637080618498-b4a1cad84ae0?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
+/* 3. SPLIT HERO SECTION */
+.split-hero {
+  flex: 1;
+  display: flex;
+  width: 100%;
+  position: relative;
+  /* Dark Overlay with your city background */
+  background: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)),
+              url('https://images.unsplash.com/photo-1637080618498-b4a1cad84ae0?q=80&w=2070');
   background-size: cover;
   background-position: center;
-  position: relative;
-  overflow: hidden; /* Prevents car from scrolling sideways */
+  overflow: hidden;
 }
 
-/* 4. Left Side Text */
-.hero-text {
-  max-width: 50%;
-  color: white;
-  z-index: 2;
+/* Center vertical divider line */
+.split-hero::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 15%;
+  bottom: 15%;
+  width: 1px;
+  background: rgba(255, 255, 255, 0.1);
+  z-index: 5;
+}
+
+.hero-half {
+  flex: 1;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Vertical Center */
+  align-items: center;     /* Horizontal Center */
+  padding: 40px;
+  text-align: center;
+  transition: flex 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hero-half:hover {
+  flex: 1.15;
+}
+
+/* 4. CONTENT STYLES */
+.hero-content {
+  z-index: 10;
+  max-width: 440px;
+  margin-top: -80px; /* Moves text up to make room for image at bottom */
 }
 
 .subtitle {
-  color: #ffcc00; /* Yellow Accent */
+  font-size: 0.9rem;
   font-weight: bold;
-  letter-spacing: 1px;
-  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 15px;
+  color: #ffcc00;
+}
+
+.subtitle.secondary {
+  color: #00d2ff; /* Driver Blue */
 }
 
 .main-title {
-  font-size: 3.5rem;
-  line-height: 1.2;
+  font-size: 2.8rem;
+  line-height: 1.1;
+  color: white;
   margin-bottom: 20px;
-  font-family: sans-serif;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .description {
-  color: #ddd;
+  color: #ccc;
   margin-bottom: 30px;
-  font-size: 1.1rem;
+  font-size: 1rem;
+  line-height: 1.5;
 }
 
-/* The Button */
+/* 5. BUTTONS */
 .book-btn {
-  padding: 15px 35px;
-  background-color: #ffcc00;
-  color: #000;
+  padding: 14px 32px;
   text-decoration: none;
   font-weight: bold;
-  font-size: 1.1rem;
-  border-radius: 5px; /* Boxy corners like the image */
+  font-size: 1rem;
+  border-radius: 4px;
   display: inline-block;
-  transition: 0.3s;
+  transition: 0.3s ease;
+  border: none;
+}
+
+.rider-btn {
+  background-color: #ffcc00;
+  color: #000;
+}
+
+.driver-btn {
+  background-color: #00d2ff;
+  color: #000;
 }
 
 .book-btn:hover {
-  background-color: #e6b800;
-  transform: translateY(-2px);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+  filter: brightness(1.1);
 }
 
-/* 5. Right Side Car Image */
-.hero-image-container {
-  width: 50%;
-  position: relative;
-  height: 100%;
-}
-
-.taxi-img {
+/* 6. IMAGE WRAPPER (The Fix for Balance) */
+.image-wrapper {
   position: absolute;
-  right: -50px; /* Pulls car slightly off screen for dynamic look */
-  bottom: -20px;
-  width: 120%; /* Make it BIG */
-  max-width: 800px;
+  bottom: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  pointer-events: none; /* User can click "through" the image to the button if needed */
+}
+
+.side-img {
+  width: 85%;
+  max-width: 450px;
+  height: auto;
   object-fit: contain;
+  filter: drop-shadow(0 15px 30px rgba(0,0,0,0.5));
+  transition: transform 0.6s ease;
 }
 
-/* 6. The Yellow Geometric Shape (Optional Background Accent) */
-.hero-section::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 40%;
-  height: 100%;
-  background: rgba(255, 204, 0, 0.1); /* Very faint yellow shape */
-  clip-path: polygon(20% 0, 100% 0, 100% 100%, 0% 100%);
-  z-index: 1;
+/* Specific Image Positioning */
+.taxi-left {
+  transform: translateY(20px);
 }
 
+.taxi-right {
+  transform: translateY(20px);
+}
+
+.hero-half:hover .side-img {
+  transform: scale(1.08) translateY(0);
+}
+
+/* Logo Section Reset */
 .logo-section {
   display: flex;
   align-items: center;
-  /* We don't need gap or font sizes here anymore, the component handles it */
 }
