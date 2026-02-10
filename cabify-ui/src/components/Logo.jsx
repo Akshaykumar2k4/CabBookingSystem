@@ -1,6 +1,11 @@
 import React from 'react';
 
-const Logo = () => {
+const Logo = ({ theme }) => {
+  // Logic to determine colors based on the theme
+  const isDriver = theme === 'driver';
+  const primaryColor = isDriver ? '#00d2ff' : '#FFCC00'; // Blue for Driver, Yellow for Rider
+  const textColor = isDriver ? '#f8feffff' : '#fffcfcff'; // Blue text for Driver, White for Rider
+
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
       {/* 1. The Aesthetic Icon */}
@@ -10,9 +15,10 @@ const Logo = () => {
         viewBox="0 0 100 100" 
         fill="none" 
         xmlns="http://www.w3.org/2000/svg"
+        style={{ transition: '0.3s' }} // Smooth color transition
       >
-        {/* Yellow Squircle Background */}
-        <rect width="100" height="100" rx="25" fill="#FFCC00" />
+        {/* Dynamic Squircle Background */}
+        <rect width="100" height="100" rx="25" fill={primaryColor} />
         
         {/* Minimalist 'C' / Route Path in Black */}
         <path 
@@ -29,9 +35,10 @@ const Logo = () => {
       <span style={{ 
         fontSize: '26px', 
         fontWeight: '700', 
-        color: '#fffcfcff', 
-        letterSpacing: '-0.5px', // Tighter letters look more premium
-        fontFamily: "'Inter', 'Segoe UI', sans-serif" 
+        color: textColor, 
+        letterSpacing: '-0.5px', 
+        fontFamily: "'Inter', 'Segoe UI', sans-serif",
+        transition: '0.3s'
       }}>
         cabify.
       </span>
