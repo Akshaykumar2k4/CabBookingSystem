@@ -9,6 +9,9 @@ const MyRides = () => {
   const [rides, setRides] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [selectedRide, setSelectedRide] = useState(null);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   useEffect(() => {
     fetchHistory();
@@ -38,6 +41,11 @@ const MyRides = () => {
     }
   };
 
+  const initiatePayment = (ride) => {
+    setSelectedRide(ride);
+    setShowPaymentModal(true);
+  };
+
   const handleEndRide = async (rideId) => {
     if (!window.confirm("Are you sure you want to end this ride?")) return;
     try {
@@ -59,6 +67,28 @@ const MyRides = () => {
       localStorage.removeItem('token');
       localStorage.removeItem('email');
       navigate('/login');
+    }
+  };
+
+  const handleConfirmPayment = async () => {
+    if (!selectedRide) return;
+    
+    setIsProcessing(true); // Start loading spinner
+    try {
+      const token = localStorage.getItem('token');
+      // This is your actual API call to the Backend
+      await axios.put(`http://localhost:8081/api/rides/${selectedRide.rideId}/end`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      alert("Payment Successful! Ride Completed. ✅");
+      setShowPaymentModal(false); // Close modal
+      fetchHistory(); // Refresh the list
+    } catch (err) {
+      console.error(err);
+      alert("Payment Failed. Please try again.");
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -160,7 +190,7 @@ const MyRides = () => {
                 {(ride.status === 'BOOKED' || ride.status === 'IN_PROGRESS') && (
                   <button 
                     className="glass-end-btn"
-                    onClick={() => handleEndRide(ride.rideId)}
+                    onClick={() => initiatePayment(ride)}
                   >
                     End Ride
                   </button>
@@ -170,6 +200,54 @@ const MyRides = () => {
           </div>
         </div>
       </div>
+      {/* 🧾 THE PAYMENT MODAL OVERLAY */}
+      {showPaymentModal && selectedRide && (
+        <div className="modal-overlay">
+          <div className="payment-modal">
+            <div className="receipt-header">
+              <h3>Ride Receipt</h3>
+              <p>Thank you for riding with Cabify!</p>
+            </div>
+
+            <div className="receipt-body">
+              <div className="receipt-row">
+                <span>Base Fare</span>
+                <span>₹{(selectedRide.fare * 0.8).toFixed(2)}</span>
+              </div>
+              <div className="receipt-row">
+                <span>Taxes (GST 18%)</span>
+                <span>₹{(selectedRide.fare * 0.18).toFixed(2)}</span>
+              </div>
+              <div className="receipt-row">
+                <span>Service Fee</span>
+                <span>₹{(selectedRide.fare * 0.02).toFixed(2)}</span>
+              </div>
+              <hr className="receipt-divider" />
+              <div className="receipt-row total">
+                <span>Total Amount</span>
+                <span>₹{selectedRide.fare.toFixed(2)}</span>
+              </div>
+            </div>
+
+            <div className="payment-actions">
+              <button 
+                className="pay-now-btn" 
+                onClick={handleConfirmPayment}
+                disabled={isProcessing}
+              >
+                {isProcessing ? "Processing..." : "PAY & COMPLETE"}
+              </button>
+              <button 
+                className="close-modal-btn" 
+                onClick={() => setShowPaymentModal(false)}
+                disabled={isProcessing}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
