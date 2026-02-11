@@ -51,7 +51,7 @@ const Login = () => {
   };
 
   return (
-    <div className="login-page-wrapper">
+    <div className="user-login-page-wrapper">
       
       {/* 1. THE TOP BAR */}
       <div className="top-bar">

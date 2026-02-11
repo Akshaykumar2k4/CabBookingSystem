@@ -56,7 +56,7 @@ const Register = () => {
   };
 
   return (
-    <div className="login-page-wrapper">
+    <div className="user-login-page-wrapper">
       
       {/* Top Bar */}
        <div className="top-bar">

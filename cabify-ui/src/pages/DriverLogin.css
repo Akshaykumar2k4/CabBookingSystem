@@ -1,5 +1,5 @@
 /* 1. Main Wrapper */
-.driver-login-page-wrapper {
+.driver-login-page-wrapper{
   display: flex;
   flex-direction: column;
   height: 100vh;
@@ -67,7 +67,7 @@
 
 /* Label color changed to Blue */
 .form-group label { 
-  color: #00d2ff; 
+  color: #00d2ff !important; 
   display: block; 
   margin-bottom: 5px; 
   font-weight: bold; 
@@ -87,7 +87,7 @@
 /* Focus color changed to Blue */
 .form-group input:focus {
   outline: none;
-  border-color: #00d2ff;
+  border-color: #00d2ff !important;
   background-color: rgba(255, 255, 255, 0.2);
 }
 
@@ -107,7 +107,7 @@
 }
 
 .login-btn:hover { 
-  background-color: #00b4db; 
+  background-color: #00b4db !important; 
   transform: translateY(-2px);
   box-shadow: 0 5px 15px rgba(0, 210, 255, 0.4);
 }
