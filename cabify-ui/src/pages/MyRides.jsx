@@ -12,6 +12,9 @@ const MyRides = () => {
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [selectedRide, setSelectedRide] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  
+  // State for Profile Icon
+  const [userName, setUserName] = useState(localStorage.getItem('userName') || '');
 
   useEffect(() => {
     fetchHistory();
@@ -29,10 +32,8 @@ const MyRides = () => {
         headers: { Authorization: `Bearer ${token}` }
       });
       
-      // Get the raw data from response
       const rawData = response.data.data || response.data || [];
       
-      // FIX: Sort rides so the newest (most recent bookingTime) appears first
       const sortedRides = [...rawData].sort((a, b) => 
         new Date(b.bookingTime) - new Date(a.bookingTime)
       );
@@ -57,8 +58,7 @@ const MyRides = () => {
 
   const handleLogout = () => {
     if (window.confirm("Are you sure you want to logout?")) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('email');
+      localStorage.clear(); // Clears token, email, and userName
       navigate('/login');
     }
   };
@@ -75,7 +75,7 @@ const MyRides = () => {
       
       alert("Payment Successful! Ride Completed. ✅");
       setShowPaymentModal(false);
-      fetchHistory(); // This will now refresh and keep the newest on top
+      fetchHistory(); 
     } catch (err) {
       console.error(err);
       alert("Payment Failed. Please try again.");
@@ -89,13 +89,43 @@ const MyRides = () => {
       
       {/* TOP BAR */}
       <div className="top-bar">
-        <div className="logo-section" onClick={() => navigate('/')} style={{cursor: 'pointer'}}>
+        {/* CORRECTED: Redirects to /booking instead of / */}
+        <div 
+          className="logo-section" 
+          onClick={() => navigate('/booking')} 
+          style={{cursor: 'pointer'}}
+        >
           <Logo />
         </div>
         
         <div className="nav-links">
+            {/* Added New Ride button for consistency */}
+            <button className="nav-btn" onClick={() => navigate('/booking')}>New Ride</button>
+            
+            {/* Added Profile Icon Circle */}
+            <div 
+              className="profile-icon-circle" 
+              onClick={() => navigate('/profile')}
+              title="View Profile"
+              style={{
+                width: '35px',
+                height: '35px',
+                backgroundColor: '#ffc107',
+                color: 'black',
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                marginLeft: '10px'
+              }}
+            >
+              {userName ? userName.charAt(0).toUpperCase() : 'U'}
+            </div>
+
             <button className="logout-btn" onClick={handleLogout}>Logout</button>
-          </div>
+        </div>
 
         <div className="contact-info">
           <div className="contact-item">
@@ -133,7 +163,7 @@ const MyRides = () => {
           {!loading && !error && rides.length === 0 && (
             <div className="empty-state">
               <p>You haven't booked any rides yet.</p>
-              <button onClick={() => navigate('/booking')}>Book a Ride</button>
+              <button className="confirm-btn" onClick={() => navigate('/booking')}>Book a Ride</button>
             </div>
           )}
 
