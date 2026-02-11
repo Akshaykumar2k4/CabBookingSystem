@@ -2,8 +2,11 @@ package com.example.cabify.controller;
 
 import com.example.cabify.dto.SuccessResponse;
 import com.example.cabify.dto.driver.DriverDto;
+import com.example.cabify.dto.driver.DriverLoginRequestDto;
+import com.example.cabify.dto.driver.DriverLoginResponseDto;
 import com.example.cabify.model.Driver;
 import com.example.cabify.service.IDriverService;
+import com.example.cabify.util.JwtUtil;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,10 +22,12 @@ public class DriverController {
     @Autowired
     private IDriverService driverService;
 
+    @Autowired
+    private JwtUtil jwtUtil;
     // 1. Register a Driver
     @PostMapping("register")
-    public ResponseEntity<SuccessResponse<DriverDto>> registerDriver(@Valid @RequestBody Driver driver) {
-        DriverDto registeredDriver = driverService.registerDriver(driver);
+    public ResponseEntity<SuccessResponse<DriverDto>> registerDriver(@Valid @RequestBody DriverDto driverDto) {
+        DriverDto registeredDriver = driverService.registerDriver(driverDto);
 
         SuccessResponse<DriverDto> response = new SuccessResponse<>(
                 "Driver registered successfully!",
@@ -69,5 +74,22 @@ public class DriverController {
                 driver
         );
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+    // Add this to your DriverController.java
+    @PostMapping("login")
+    public ResponseEntity<SuccessResponse<DriverLoginResponseDto>> loginDriver(
+            @Valid @RequestBody DriverLoginRequestDto loginRequest) {
+
+        // ❌ WRONG: driverService.loginDriver(loginRequest.getEmail());
+        // ✅ CORRECT: Pass the whole object
+        DriverDto driverDto = driverService.loginDriver(loginRequest);
+
+        String token = jwtUtil.generateToken(driverDto.getEmail());
+
+        return new ResponseEntity<>(new SuccessResponse<>(
+                "Login successful!",
+                HttpStatus.OK.value(),
+                new DriverLoginResponseDto(token, driverDto)),
+                HttpStatus.OK);
     }
 }

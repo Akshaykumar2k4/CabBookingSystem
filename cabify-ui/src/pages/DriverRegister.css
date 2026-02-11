@@ -1,0 +1,87 @@
+/* Import base driver login styles */
+@import './DriverLogin.css';
+
+/* 1. LOCK THE VIEWPORT: No page scroll allowed */
+.driver-login-page-wrapper {
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden; 
+    display: flex;
+    flex-direction: column;
+}
+
+/* 2. CENTER THE BOX WITH A MANDATORY GAP */
+.login-container {
+    flex: 1;
+    display: flex;
+    align-items: center; /* Perfect vertical center */
+    justify-content: center;
+    padding: 0; /* Remove padding to maximize space */
+    position: relative;
+}
+
+/* 3. THE COMPACT REGISTRATION BOX (No Scroll) */
+.registration-box {
+    background: rgba(10, 25, 41, 0.7); 
+    backdrop-filter: blur(12px);
+    width: 90%;
+    max-width: 600px; /* Wider to keep height low */
+    
+    /* 🚀 REDUCE VERTICAL PADDING DRAMATICALLY */
+    padding: 15px 35px; 
+    border-radius: 15px;
+    border: 1px solid rgba(0, 210, 255, 0.2);
+    
+    /* 🚀 REMOVE OVERFLOW TO KILL THE SCROLLBAR */
+    overflow: hidden; 
+}
+
+/* 4. TIGHTEN INTERNAL ELEMENTS */
+.registration-box h2 {
+    font-size: 1.3rem; /* Smaller title */
+    margin: 0 0 2px 0;
+}
+
+.registration-box p {
+    font-size: 0.75rem;
+    margin: 0 0 10px 0;
+}
+
+/* 5. THE GRID: 2 Columns is the only way to fit everything */
+.driver-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 15px; /* Minimal vertical gap */
+    margin-bottom: 5px;
+}
+
+.form-group {
+    margin-bottom: 6px; /* 🚀 VERY TIGHT ROWS */
+}
+
+.form-group label {
+    font-size: 0.7rem;
+    margin-bottom: 1px;
+    display: block;
+    color: #00d2ff;
+}
+
+.form-group input {
+    /* 🚀 SLIM INPUTS */
+    padding: 6px 12px !important;
+    font-size: 0.85rem !important;
+    height: 32px !important; /* Fixed short height */
+}
+
+/* 6. BUTTON & REDIRECT */
+.login-btn {
+    margin-top: 8px !important;
+    padding: 8px !important;
+    font-size: 0.9rem !important;
+    border-radius: 50px !important;
+}
+
+.redirect-text {
+    margin-top: 5px !important;
+    font-size: 0.75rem;
+}

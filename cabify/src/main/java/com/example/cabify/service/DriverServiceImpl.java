@@ -1,6 +1,8 @@
 package com.example.cabify.service;
 
 import com.example.cabify.dto.driver.DriverDto;
+import com.example.cabify.dto.driver.DriverLoginRequestDto;
+import com.example.cabify.dto.driver.DriverLoginResponseDto;
 import com.example.cabify.model.Driver;
 import com.example.cabify.model.DriverStatus;
 import com.example.cabify.repository.DriverRepository;
@@ -20,19 +22,23 @@ public class DriverServiceImpl implements IDriverService {
     private DriverRepository driverRepository;
 
     @Override
-    public DriverDto registerDriver(Driver driver) {
-        log.info("Registering new Driver with License: {}", driver.getLicenseNumber());
-        // 1. Check for Null values
-        if (driver.getName() == null || driver.getLicenseNumber() == null || driver.getVehicleDetails() == null) {
-            throw new IllegalArgumentException("Name, License Number, and Vehicle Details cannot be empty");
+    public DriverDto registerDriver(DriverDto driverDto) {
+        log.info("Registering new Driver with License: {}", driverDto.getLicenseNumber());
+        
+        // 1. Check for Null values from the DTO
+        if (driverDto.getName() == null || driverDto.getLicenseNumber() == null || 
+            driverDto.getVehicleDetails() == null || driverDto.getEmail() == null || 
+            driverDto.getPassword() == null) {
+            throw new IllegalArgumentException("All fields (Name, Email, Password, License, Vehicle) are required");
         }
 
         // 2. Trim and Sanitize data
-        String name = driver.getName().trim();
-        String license = driver.getLicenseNumber().trim();
-        String vehicle = driver.getVehicleDetails().trim();
-        // Handle phone safely (check for null first if needed, though Entity usually handles binding)
-        String phone = (driver.getPhone() != null) ? driver.getPhone().trim() : "";
+        String name = driverDto.getName().trim();
+        String email = driverDto.getEmail().trim().toLowerCase(); 
+        String password = driverDto.getPassword(); 
+        String license = driverDto.getLicenseNumber().trim();
+        String vehicle = driverDto.getVehicleDetails().trim();
+        String phone = (driverDto.getPhone() != null) ? driverDto.getPhone().trim() : "";
 
         // 3. Validation Logic
         if (name.length() < 3 || name.length() > 30) {
@@ -46,26 +52,49 @@ public class DriverServiceImpl implements IDriverService {
         if (license.length() < 5) {
             throw new IllegalArgumentException("Invalid License Number format");
         }
+        
+        if (!email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
+            throw new IllegalArgumentException("Invalid email format");
+        }
 
         // 4. Duplicate Check
         if (driverRepository.existsByLicenseNumber(license)) {
-            log.error("Driver registration failed: License {} already used", driver.getLicenseNumber());
-            throw new IllegalStateException("Driver with this License Number is already registered!");
+            log.error("Registration failed: License {} already used", license);
+            throw new IllegalStateException("License Number is already registered!");
         }
 
-        // 5. Save Data (Set Defaults)
-        driver.setName(name);
-        driver.setPhone(phone);
-        driver.setLicenseNumber(license);
-        driver.setVehicleDetails(vehicle);
-        driver.setStatus(DriverStatus.OFFLINE); // Default status is OFFLINE
+        // 5. Map DTO to Entity for DB Storage
+        Driver driverEntity = new Driver();
+        driverEntity.setName(name);
+        driverEntity.setEmail(email);
+        driverEntity.setPassword(password); // In production, wrap this in BCrypt!
+        driverEntity.setPhone(phone);
+        driverEntity.setLicenseNumber(license);
+        driverEntity.setVehicleDetails(vehicle);
+        driverEntity.setStatus(DriverStatus.OFFLINE); // Default status
 
-        Driver savedDriver = driverRepository.save(driver);
+        // 6. Save Data
+        Driver savedDriver = driverRepository.save(driverEntity);
         log.info("Driver registered successfully. ID: {}", savedDriver.getDriverId());
-        // 6. Return DTO
+        
         return mapToDto(savedDriver);
     }
+    @Override
+    public DriverDto loginDriver(DriverLoginRequestDto loginRequest) {
+        // 1. Find by Email
+        Driver driver = driverRepository.findByEmail(loginRequest.getEmail().toLowerCase().trim())
+                .orElseThrow(() -> new NoSuchElementException("Invalid Email or Password"));
 
+        // 2. Check Password
+        if (!driver.getPassword().equals(loginRequest.getPassword())) {
+            throw new IllegalArgumentException("Invalid Email or Password");
+        }
+
+        log.info("Driver authenticated: {}", loginRequest.getEmail());
+
+        // 3. Return only the DriverDto
+        return mapToDto(driver);
+    }
     @Override
     public DriverDto getDriverById(Long driverId) {
         Driver driver = driverRepository.findById(driverId)
@@ -80,7 +109,6 @@ public class DriverServiceImpl implements IDriverService {
                 .orElseThrow(() -> new NoSuchElementException("Driver not found with ID: " + driverId));
 
         try {
-            // Converts string input (e.g., "available") to Enum (AVAILABLE)
             DriverStatus newStatus = DriverStatus.valueOf(statusStr.toUpperCase());
             driver.setStatus(newStatus);
             log.info("Driver ID {} status updated to {}", driverId, newStatus);
@@ -104,12 +132,13 @@ public class DriverServiceImpl implements IDriverService {
                 .map(this::mapToDto)
                 .collect(Collectors.toList());
     }
-
     // Helper method to convert Entity -> DTO
     private DriverDto mapToDto(Driver driver) {
         return new DriverDto(
                 driver.getDriverId(),
                 driver.getName(),
+                driver.getEmail(),
+                driver.getPassword(),
                 driver.getPhone(),
                 driver.getLicenseNumber(),
                 driver.getVehicleDetails(),

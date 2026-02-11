@@ -7,7 +7,7 @@ const Home = () => {
   return (
     <div className="main-wrapper">
       
-      {/* 1. THE TOP INFO BAR (White Section) */}
+      {/* 1. TOP INFO BAR */}
       <div className="top-bar">
         <div className="logo-section">
           <Logo />
@@ -40,29 +40,37 @@ const Home = () => {
         </div>
       </div>
 
-      {/* 2. THE HERO SECTION (Dark Background + Car) */}
-      <div className="hero-section">
+      {/* 2. SPLIT HERO SECTION */}
+      <div className="split-hero">
         
-        {/* Left Side: Text */}
-        <div className="hero-text">
-          <p className="subtitle">Travel securely with us!</p>
-          <h1 className="main-title">Premium Rides at <br /> Pocket-Friendly Prices.</h1>
-          <p className="description">
-            Experience the ultimate comfort with our verified drivers. 
-            Zero delays, 100% safety, and instant booking confirmation.
-          </p>
-          <Link to="/login" className="book-btn">
-            Book Now & Save 20%
-          </Link>
+        {/* RIDER SIDE (Left) */}
+        <div className="hero-half rider-side">
+          <div className="hero-content">
+            <p className="subtitle">Need a ride?</p>
+            <h1 className="main-title">Premium Travel <br /> At Your Doorstep.</h1>
+            <p className="description">
+              Secure, fast, and comfortable rides with top-rated drivers.
+            </p>
+            <Link to="/login" className="book-btn rider-btn">
+              Ride with Cabify
+            </Link>
+          </div>
+          
         </div>
 
-        {/* Right Side: Car Image */}
-        <div className="hero-image-container">
-            <img 
-              src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Yellow_taxi_cab.svg/1200px-Yellow_taxi_cab.svg.png" 
-              alt="Yellow Taxi" 
-              className="taxi-img" 
-            />
+        {/* DRIVER SIDE (Right) */}
+        <div className="hero-half driver-side">
+          <div className="hero-content">
+            <p className="subtitle secondary">Want to earn?</p>
+            <h1 className="main-title">Drive with Us & Be Your Own Boss.</h1>
+            <p className="description">
+              Flexible hours, instant payouts, and 24/7 partner support.
+            </p>
+            <Link to="/driver-login" className="book-btn driver-btn">
+              Become a Partner
+            </Link>
+          </div>
+    
         </div>
 
       </div>
