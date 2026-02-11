@@ -13,7 +13,6 @@ const MyRides = () => {
   const [selectedRide, setSelectedRide] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
   
-  // State for Profile Icon
   const [userName, setUserName] = useState(localStorage.getItem('userName') || '');
 
   useEffect(() => {
@@ -58,11 +57,12 @@ const MyRides = () => {
 
   const handleLogout = () => {
     if (window.confirm("Are you sure you want to logout?")) {
-      localStorage.clear(); // Clears token, email, and userName
+      localStorage.clear(); 
       navigate('/login');
     }
   };
 
+  // --- UPDATED FUNCTION ---
   const handleConfirmPayment = async () => {
     if (!selectedRide) return;
     
@@ -73,9 +73,12 @@ const MyRides = () => {
         headers: { Authorization: `Bearer ${token}` }
       });
       
-      alert("Payment Successful! Ride Completed. ✅");
+      // Close the modal
       setShowPaymentModal(false);
-      fetchHistory(); 
+      
+      // Redirect to feedback page and pass the rideId in state
+      navigate('/feedback', { state: { rideId: selectedRide.rideId } });
+
     } catch (err) {
       console.error(err);
       alert("Payment Failed. Please try again.");
@@ -87,9 +90,7 @@ const MyRides = () => {
   return (
     <div className="my-rides-wrapper">
       
-      {/* TOP BAR */}
       <div className="top-bar">
-        {/* CORRECTED: Redirects to /booking instead of / */}
         <div 
           className="logo-section" 
           onClick={() => navigate('/booking')} 
@@ -99,10 +100,8 @@ const MyRides = () => {
         </div>
         
         <div className="nav-links">
-            {/* Added New Ride button for consistency */}
             <button className="nav-btn" onClick={() => navigate('/booking')}>New Ride</button>
             
-            {/* Added Profile Icon Circle */}
             <div 
               className="profile-icon-circle" 
               onClick={() => navigate('/profile')}
@@ -152,7 +151,6 @@ const MyRides = () => {
         </div>
       </div>
 
-      {/* MAIN CONTENT */}
       <div className="rides-bg-container">
         <div className="glass-history-box">
           <h2>My Ride History</h2>
@@ -220,7 +218,6 @@ const MyRides = () => {
         </div>
       </div>
 
-      {/* PAYMENT MODAL */}
       {showPaymentModal && selectedRide && (
         <div className="modal-overlay">
           <div className="payment-modal">
