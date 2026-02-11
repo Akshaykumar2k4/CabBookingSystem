@@ -53,7 +53,7 @@
   width: 100%;
   position: relative;
   /* Dark Overlay with your city background */
-  background: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)),
+  background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
               url('https://images.unsplash.com/photo-1637080618498-b4a1cad84ae0?q=80&w=2070');
   background-size: cover;
   background-position: center;
