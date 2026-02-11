@@ -7,6 +7,7 @@ import MyRides from './pages/MyRides';
 import Profile from './pages/Profile';
 import DriverRegister from './pages/DriverRegister';
 import DriverLogin from './pages/DriverLogin';
+import Feedback from './pages/Feedback';
 function App() {
   return (
     <Routes>
@@ -18,6 +19,7 @@ function App() {
       <Route path="/profile" element={<Profile />} />
       <Route path="/driver-register" element={<DriverRegister />} />
       <Route path="/driver-login" element={<DriverLogin />} />
+      <Route path="/feedback" element={<Feedback />} />
     </Routes>
   )
 }

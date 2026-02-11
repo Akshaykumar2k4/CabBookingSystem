@@ -48,7 +48,7 @@ public class RatingServiceImpl implements IRatingService {
         Rating rating = new Rating();
         rating.setRide(ride);
         rating.setPassengerId(ratingDto.getPassengerId());
-        rating.setDriverId(ride.getDriver().getDriverId()); // Auto-fill Driver ID
+        rating.setDriverId(ride.getDriver().getDriverId());
         rating.setScore(ratingDto.getScore());
         rating.setComments(ratingDto.getComments());
 
