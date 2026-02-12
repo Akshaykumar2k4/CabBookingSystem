@@ -12,6 +12,8 @@ const MyRides = () => {
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [selectedRide, setSelectedRide] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  
+  const [userName, setUserName] = useState(localStorage.getItem('userName') || '');
 
   useEffect(() => {
     fetchHistory();
@@ -29,10 +31,8 @@ const MyRides = () => {
         headers: { Authorization: `Bearer ${token}` }
       });
       
-      // Get the raw data from response
       const rawData = response.data.data || response.data || [];
       
-      // FIX: Sort rides so the newest (most recent bookingTime) appears first
       const sortedRides = [...rawData].sort((a, b) => 
         new Date(b.bookingTime) - new Date(a.bookingTime)
       );
@@ -57,12 +57,12 @@ const MyRides = () => {
 
   const handleLogout = () => {
     if (window.confirm("Are you sure you want to logout?")) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('email');
+      localStorage.clear(); 
       navigate('/login');
     }
   };
 
+  // --- UPDATED FUNCTION ---
   const handleConfirmPayment = async () => {
     if (!selectedRide) return;
     
@@ -73,9 +73,12 @@ const MyRides = () => {
         headers: { Authorization: `Bearer ${token}` }
       });
       
-      alert("Payment Successful! Ride Completed. ✅");
+      // Close the modal
       setShowPaymentModal(false);
-      fetchHistory(); // This will now refresh and keep the newest on top
+      
+      // Redirect to feedback page and pass the rideId in state
+      navigate('/feedback', { state: { rideId: selectedRide.rideId } });
+
     } catch (err) {
       console.error(err);
       alert("Payment Failed. Please try again.");
@@ -87,18 +90,68 @@ const MyRides = () => {
   return (
     <div className="my-rides-wrapper">
       
-      {/* TOP BAR */}
       <div className="top-bar">
-        <div className="logo-section" onClick={() => navigate('/')} style={{cursor: 'pointer'}}>
+        <div 
+          className="logo-section" 
+          onClick={() => navigate('/booking')} 
+          style={{cursor: 'pointer'}}
+        >
           <Logo />
         </div>
         
         <div className="nav-links">
+            <button className="nav-btn" onClick={() => navigate('/booking')}>New Ride</button>
+            
+            <div 
+              className="profile-icon-circle" 
+              onClick={() => navigate('/profile')}
+              title="View Profile"
+              style={{
+                width: '35px',
+                height: '35px',
+                backgroundColor: '#ffc107',
+                color: 'black',
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                marginLeft: '10px'
+              }}
+            >
+              {userName ? userName.charAt(0).toUpperCase() : 'U'}
+            </div>
+
             <button className="logout-btn" onClick={handleLogout}>Logout</button>
           </div>
+        </div>
+
+        <div className="contact-info">
+          <div className="contact-item">
+            <span className="icon">📞</span>
+            <div>
+              <p className="contact-label">Call Us Now</p>
+              <p className="contact-value">0413-225356</p>
+            </div>
+          </div>
+          <div className="contact-item">
+            <span className="icon">✉️</span>
+            <div>
+              <p className="contact-label">Email Now</p>
+              <p className="contact-value">info.cabify@gmail.com</p>
+            </div>
+          </div>
+          <div className="contact-item">
+            <span className="icon">📍</span>
+            <div>
+              <p className="contact-label">Location</p>
+              <p className="contact-value">Chennai, TamilNadu</p>
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* MAIN CONTENT */}
       <div className="rides-bg-container">
         <div className="glass-history-box">
           <h2>My Ride History</h2>
@@ -109,7 +162,7 @@ const MyRides = () => {
           {!loading && !error && rides.length === 0 && (
             <div className="empty-state">
               <p>You haven't booked any rides yet.</p>
-              <button onClick={() => navigate('/booking')}>Book a Ride</button>
+              <button className="confirm-btn" onClick={() => navigate('/booking')}>Book a Ride</button>
             </div>
           )}
 
@@ -166,6 +219,53 @@ const MyRides = () => {
         </div>
       </div>
 
+      {showPaymentModal && selectedRide && (
+        <div className="modal-overlay">
+          <div className="payment-modal">
+            <div className="receipt-header">
+              <h3>Ride Receipt</h3>
+              <p>Thank you for riding with Cabify!</p>
+            </div>
+
+            <div className="receipt-body">
+              <div className="receipt-row">
+                <span>Base Fare</span>
+                <span>₹{(selectedRide.fare * 0.8).toFixed(2)}</span>
+              </div>
+              <div className="receipt-row">
+                <span>Taxes (GST 18%)</span>
+                <span>₹{(selectedRide.fare * 0.18).toFixed(2)}</span>
+              </div>
+              <div className="receipt-row">
+                <span>Service Fee</span>
+                <span>₹{(selectedRide.fare * 0.02).toFixed(2)}</span>
+              </div>
+              <hr className="receipt-divider" />
+              <div className="receipt-row total">
+                <span>Total Amount</span>
+                <span>₹{selectedRide.fare.toFixed(2)}</span>
+              </div>
+            </div>
+
+            <div className="payment-actions">
+              <button 
+                className="pay-now-btn" 
+                onClick={handleConfirmPayment}
+                disabled={isProcessing}
+              >
+                {isProcessing ? "Processing..." : "PAY & COMPLETE"}
+              </button>
+              <button 
+                className="close-modal-btn" 
+                onClick={() => setShowPaymentModal(false)}
+                disabled={isProcessing}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

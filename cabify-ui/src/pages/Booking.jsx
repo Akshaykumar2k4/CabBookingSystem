@@ -36,7 +36,6 @@ const Booking = () => {
             params: { source, destination },
             headers: { Authorization: `Bearer ${token}` }
         });
-        // ⚠️ FIXED: Robust check (handles both Wrapped and Raw responses)
         setEstimatedFare(response.data.data || response.data); 
     } catch (error) {
         setEstimatedFare(0);
@@ -64,6 +63,8 @@ const Booking = () => {
             const realId = myUser.id || myUser.userId; 
             setCurrentUserId(realId);
             setUserName(myUser.name); 
+            localStorage.setItem('userName', myUser.name);
+            localStorage.setItem('userId', realId);
         }
     } catch (error) {
         console.error("Error fetching user identity:", error);
@@ -76,7 +77,6 @@ const Booking = () => {
         const response = await axios.get('http://localhost:8081/api/rides/locations', {
             headers: { Authorization: `Bearer ${token}` }
         });
-        // ⚠️ FIXED: Check for .data.data (Wrapper) OR .data (Raw List) to prevent undefined error
         setLocations(response.data.data || response.data || []);
     } catch (error) {
         console.error("Error fetching locations", error);
@@ -104,7 +104,6 @@ const Booking = () => {
             headers: { Authorization: `Bearer ${token}` }
         });
 
-        // ⚠️ FIXED: Access .data.data for the wrapped response
         const responseData = response.data.data || response.data;
         const finalFare = responseData.fare;
         alert(`Ride Confirmed!\nAmount: ₹${finalFare}\nDriver: ${responseData.driverName}`);
@@ -122,8 +121,7 @@ const Booking = () => {
 
   const handleLogout = () => {
     if (window.confirm("Are you sure you want to logout?")) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('email');
+      localStorage.clear();
       navigate('/login');
     }
   };
@@ -133,14 +131,44 @@ const Booking = () => {
       
       {/* 1. TOP BAR */}
       <div className="top-bar">
-        <div className="logo-section"><Logo /></div>
+        {/* UPDATED: Added onClick and pointer cursor to logo-section */}
+        <div 
+            className="logo-section" 
+            onClick={() => navigate('/booking')} 
+            style={{ cursor: 'pointer' }}
+        >
+            <Logo />
+        </div>
+
         <div className="contact-info">
           <div className="nav-links">
-
             <button className="nav-btn" onClick={() => navigate('/booking')}>New Ride</button>
             <button className="nav-btn" onClick={() => navigate('/my-rides')}>My Rides</button>
+            
+            <div 
+              className="profile-icon-circle" 
+              onClick={() => navigate('/profile')}
+              title="View Profile"
+              style={{
+                width: '35px',
+                height: '35px',
+                backgroundColor: '#ffc107',
+                color: 'black',
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                marginLeft: '10px'
+              }}
+            >
+              {userName ? userName.charAt(0).toUpperCase() : 'U'}
+            </div>
+
             <button className="logout-btn" onClick={handleLogout}>Logout</button>
           </div>
+          
           <div className="contact-item">
             <span className="icon">📞</span>
             <div><p className="contact-label">Call Us</p><p className="contact-value">0413-225356</p></div>
@@ -148,10 +176,6 @@ const Booking = () => {
           <div className="contact-item">
             <span className="icon">✉️</span>
             <div><p className="contact-label">Email</p><p className="contact-value">info@cabify.com</p></div>
-          </div>
-          <div className="contact-item">
-            <span className="icon">📍</span>
-            <div><p className="contact-label">Location</p><p className="contact-value">Chennai</p></div>
           </div>
         </div>
       </div>
@@ -168,7 +192,6 @@ const Booking = () => {
                 <label>Pickup Location</label>
                 <select className="ride-select" value={source} onChange={(e) => setSource(e.target.value)}>
                     <option value="">Select Pickup...</option>
-                    {/* ⚠️ FIXED: Added (locations || []) check to prevent map crash */}
                     {(locations || []).map((loc, i) => <option key={i} value={loc}>{loc}</option>)}
                 </select>
             </div>
@@ -177,18 +200,18 @@ const Booking = () => {
                 <label>Drop Location</label>
                 <select className="ride-select" value={destination} onChange={(e) => setDestination(e.target.value)}>
                     <option value="">Select Drop...</option>
-                    {/* ⚠️ FIXED: Added (locations || []) check to prevent map crash */}
                     {(locations || []).map((loc, i) => <option key={i} value={loc}>{loc}</option>)}
                 </select>
             </div>
+
             {isInvalidRoute && (
             <p style={{ color: '#ff4444', fontSize: '0.85rem', marginTop: '-10px', marginBottom: '10px' }}>
             ⚠️ Pickup and Drop location cannot be the same.
             </p>
             )}
+
             <div className="fare-display">
                 <span>ESTIMATED FARE</span>
-                {/* Ensure estimatedFare is a number before calling toFixed */}
                 <h3>₹ {Number(estimatedFare) > 0 ? Number(estimatedFare).toFixed(2) : '--'}</h3>
             </div>
 
