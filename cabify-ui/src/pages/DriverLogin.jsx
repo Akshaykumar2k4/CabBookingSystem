@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Logo from '../components/Logo';
-import './DriverLogin.css'; // Importing the driver-specific theme
+import './DriverLogin.css';
 
 const DriverLogin = () => {
   const navigate = useNavigate();
@@ -19,23 +19,22 @@ const DriverLogin = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      // 1. Call Backend (Driver specific endpoint)
       const response = await axios.post('http://localhost:8081/api/drivers/login', formData);
       
-      console.log("🔥 Driver Backend Response:", response.data);
+      // 🚀 THE FIX: Extracting data from your SuccessResponse structure
+      // response.data.data contains the DriverLoginResponseDto {token, driver}
+      const loginData = response.data.data; 
+      const token = loginData?.token;
+      const driverInfo = loginData?.driver;
 
-      const token = response.data.token || response.data.jwt || (response.data.data && response.data.data.token);
-
-      if (token) {
-          // ✅ SUCCESS
-          console.log("Driver Login Success! Token:", token);
-          
-          // 3. Save Driver-specific keys to avoid conflicts with Rider session
+      if (token && driverInfo) {
+          // Save keys specifically for the driver portal
           localStorage.setItem('driverToken', token);
+          localStorage.setItem('driverInfo', JSON.stringify(driverInfo)); 
           localStorage.setItem('driverEmail', formData.email); 
           
           alert("Driver Login Successful!");
-          navigate('/driver-dashboard'); 
+          navigate('/driver-dashboard'); // 🚀 This will now trigger the redirect
       } else {
           alert("Login Failed: Backend did not return a valid token.");
       }
@@ -48,8 +47,7 @@ const DriverLogin = () => {
 
   return (
     <div className="driver-login-page-wrapper">
-      
-      {/* 1. THE TOP BAR */}
+      {/* 1. THE TOP BAR - UNCHANGED AS PER YOUR REQUEST */}
       <div className="top-bar driver-theme">
         <div className="logo-section">
           <Logo theme="driver" />

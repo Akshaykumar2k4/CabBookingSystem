@@ -124,6 +124,7 @@ const MyRides = () => {
             </div>
 
             <button className="logout-btn" onClick={handleLogout}>Logout</button>
+          </div>
         </div>
 
         <div className="contact-info">

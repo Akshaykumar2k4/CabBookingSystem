@@ -4,30 +4,22 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Component;
 
-import java.security.Key;
+import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.function.Function;
 
 @Component
 public class JwtUtil {
 
-    //This variable will hold the random bytes in RAM
-    private Key signInKey;
+    // 🚀 FIXED KEY: Ensures signatures match after server restarts
+    private final String SECRET_STRING = "YourElectricBlueDriverPortalSecretKeyMustBeVeryLong123!";
+    private final SecretKey signInKey = Keys.hmacShaKeyFor(SECRET_STRING.getBytes(StandardCharsets.UTF_8));
 
-    // Token is valid for 10 hours
-    public static final long EXPIRATION_TIME = 1000 * 60 * 60 * 10;
+    public static final long EXPIRATION_TIME = 1000 * 60 * 60 * 10; // 10 hours
 
-    /**
-     * Generates a JWT for the authenticated user (e.g., after successful login).
-     */
-    // This method generates the key when the app starts
-    @PostConstruct
-    protected void init() {
-        this.signInKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
-    }
     public String generateToken(String userName) {
         return Jwts.builder()
                 .setSubject(userName)
@@ -37,16 +29,10 @@ public class JwtUtil {
                 .compact();
     }
 
-    /**
-     * Validates the token from the request header.
-     * Checks if the signature is valid and if the token belongs to the user.
-     */
     public boolean validateToken(String token, String userName) {
         final String extractedUsername = extractUsername(token);
         return (extractedUsername.equals(userName) && !isTokenExpired(token));
     }
-
-    // --- Helper Methods ---
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -72,5 +58,4 @@ public class JwtUtil {
     private Boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
-
 }

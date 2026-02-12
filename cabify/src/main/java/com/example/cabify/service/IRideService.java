@@ -17,4 +17,6 @@ public interface IRideService {
     double calculateFare(String source, String destination);
 
     List<RideResponseDto> getMyRides(String email);
+
+    public RideResponseDto getActiveRideForDriver(Long driverId);
 }

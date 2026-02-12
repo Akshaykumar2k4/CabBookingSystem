@@ -1,0 +1,164 @@
+/* 1. Main Wrapper */
+.driver-rides-wrapper {
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100vh !important;
+  font-family: 'Segoe UI', sans-serif !important;
+  overflow: hidden !important;
+}
+
+/* 2. Top Bar - Stripping Yellow, Adding Blue */
+.driver-rides-wrapper .top-bar {
+  background-color: #000 !important;
+  padding: 10px 50px !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  border-bottom: 3px solid #00d2ff !important; /* Fixed Blue Border */
+  color: white !important;
+}
+
+.nav-links {
+    display: flex !important;
+    align-items: center !important;
+    gap: 15px !important;
+}
+
+.nav-btn-blue {
+    background: transparent !important;
+    border: 1px solid #00d2ff !important;
+    color: #00d2ff !important;
+    padding: 8px 16px !important;
+    border-radius: 20px !important;
+    font-weight: bold !important;
+    cursor: pointer !important;
+}
+
+.profile-icon-circle-blue {
+    width: 35px !important;
+    height: 35px !important;
+    background-color: #00d2ff !important; /* Fixed Blue Circle */
+    color: black !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-weight: bold !important;
+}
+
+/* 3. Background Container */
+.rides-bg-container {
+  flex: 1 !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  background: linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.85)),
+              url('https://images.unsplash.com/photo-1637080618498-b4a1cad84ae0?q=80&w=2070&auto=format&fit=crop') !important;
+  background-size: cover !important;
+  padding: 20px !important;
+}
+
+/* 4. The Glass Box - Midnight Navy tint */
+.glass-history-box-blue {
+  background: rgba(10, 25, 41, 0.9) !important;
+  backdrop-filter: blur(15px) !important;
+  padding: 35px !important;
+  border-radius: 20px !important;
+  border: 1px solid rgba(0, 210, 255, 0.2) !important;
+  width: 100% !important;
+  max-width: 700px !important;
+  max-height: 85vh !important;
+  display: flex !important;
+  flex-direction: column !important;
+  color: white !important;
+}
+
+.history-header h2 {
+  text-align: center !important;
+  color: #00d2ff !important; /* Fixed Blue Title */
+  text-transform: uppercase !important;
+  letter-spacing: 1.5px !important;
+  margin-bottom: 5px !important;
+}
+
+.history-header p { text-align: center !important; color: #aaa !important; margin-bottom: 25px !important; }
+.highlight-green { color: #00e676 !important; font-weight: bold !important; }
+
+/* 🚀 SCROLLBAR - BLUE THEME */
+.rides-scroll-list {
+  overflow-y: auto !important;
+  padding-right: 8px !important;
+}
+
+.rides-scroll-list::-webkit-scrollbar { width: 6px !important; }
+.rides-scroll-list::-webkit-scrollbar-thumb {
+  background: #00d2ff !important; /* Fixed Blue Scrollbar */
+  border-radius: 10px !important;
+}
+
+/* 🚀 RIDE CARDS HOVER - BLUE THEME */
+.glass-ride-card-blue {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border-radius: 12px !important;
+  padding: 20px !important;
+  margin-bottom: 15px !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  transition: all 0.3s ease !important;
+}
+
+.glass-ride-card-blue:hover {
+  transform: translateX(8px) !important;
+  border-color: #00d2ff !important; /* Fixed Blue Hover Border */
+  background: rgba(0, 210, 255, 0.05) !important;
+}
+
+.status-badge-blue {
+  padding: 4px 12px !important;
+  border-radius: 50px !important;
+  font-size: 0.7rem !important;
+  font-weight: bold !important;
+  text-transform: uppercase !important;
+}
+
+.status-badge-blue.paid {
+  color: #00e676 !important;
+  border: 1px solid #00e676 !important;
+  background: rgba(0, 230, 118, 0.1) !important;
+}
+
+.route-arrow-blue { color: #00d2ff !important; font-weight: bold !important; }
+
+.info-row {
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: 10px !important;
+  border-top: 1px solid rgba(255,255,255,0.05) !important;
+  padding-top: 15px !important;
+}
+
+.info-item small { color: #777 !important; text-transform: uppercase !important; font-size: 0.7rem !important; }
+.earning-text { color: #00e676 !important; font-size: 1.1rem !important; }
+
+/* 🚀 BUTTONS - BLUE THEME */
+.blue-action-btn {
+    background: #00d2ff !important;
+    color: #000 !important; /* High contrast black on blue */
+    border: none !important;
+    padding: 12px 25px !important;
+    border-radius: 50px !important;
+    font-weight: 800 !important;
+    cursor: pointer !important;
+    margin-top: 15px !important;
+    transition: 0.3s !important;
+}
+
+.blue-action-btn:hover { background: #00e676 !important; transform: scale(1.05) !important; }
+
+.logout-btn-red {
+  background: transparent !important;
+  border: 1px solid #ff4444 !important;
+  color: #ff4444 !important;
+  padding: 8px 16px !important;
+  border-radius: 20px !important;
+  font-weight: bold !important;
+}

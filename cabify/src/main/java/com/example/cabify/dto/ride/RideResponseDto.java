@@ -7,11 +7,12 @@ import java.time.LocalDateTime;
 @Data
 public class RideResponseDto {
     private Long rideId;
-    private String driverName;      // Converted from Driver ID
-    private String vehicleDetails;  // Converted from Driver ID
+    private String userName;       // 🚀 ADD THIS: To show Passenger Name on Receipt
+    private String driverName;     
+    private String vehicleDetails; 
     private String source;
     private String destination;
-    private RideStatus status;      // e.g., BOOKED
+    private RideStatus status;      
     private Double fare;
     private LocalDateTime bookingTime;
 }
