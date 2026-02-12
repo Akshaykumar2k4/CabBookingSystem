@@ -51,13 +51,13 @@ public class DriverController {
     }
 
     // 3. Update Driver Status (UPDATED)
-    @PutMapping("status/{id}")
+   @PutMapping("status/{id}")
     public ResponseEntity<SuccessResponse<DriverDto>> updateDriverStatus(
             @PathVariable Long id,
             @RequestParam("status") String status) {
 
-        // 🚀 This updates the driver status in the database
-        DriverDto updatedDriver = driverService.updateDriverStatus(id, status);
+        // 🚀 Ensure status is passed in correct format (e.g., uppercase) to the service
+        DriverDto updatedDriver = driverService.updateDriverStatus(id, status.toUpperCase());
 
         return new ResponseEntity<>(new SuccessResponse<>(
                 "Status updated to " + status,

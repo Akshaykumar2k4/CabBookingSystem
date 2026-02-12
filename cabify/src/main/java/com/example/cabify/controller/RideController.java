@@ -89,6 +89,22 @@ public ResponseEntity<SuccessResponse<List<String>>> getLocations() {
 
         return new ResponseEntity<>(successResponse, HttpStatus.OK);
     }
+    // Add this method inside your RideController class
+@GetMapping("/active-request/{driverId}")
+public ResponseEntity<SuccessResponse<RideResponseDto>> getActiveRide(@PathVariable Long driverId) {
+    
+    // Call the new service method
+    RideResponseDto activeRide = rideService.getActiveRideForDriver(driverId);
+    
+    // Return 200 OK even if no ride is found (data will be null)
+    SuccessResponse<RideResponseDto> response = new SuccessResponse<>(
+            activeRide != null ? "Active ride found" : "No active ride",
+            HttpStatus.OK.value(),
+            activeRide
+    );
+    
+    return ResponseEntity.ok(response);
+}
 
     @GetMapping("/history")
     public ResponseEntity<SuccessResponse<List<RideResponseDto>>> getMyHistory(Principal principal) {

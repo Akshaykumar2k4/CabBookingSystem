@@ -213,20 +213,35 @@ public class RideServiceImpl implements IRideService {
                 .map(this::mapToDto)
                 .collect(Collectors.toList());
     }
+    @Override
+public RideResponseDto getActiveRideForDriver(Long driverId) {
+    // 1. Verify driver exists
+    driverRepository.findById(driverId)
+            .orElseThrow(() -> new ResourceNotFoundException("Driver not found with ID: " + driverId));
+
+    // 2. Fetch the active ride from the custom query
+    return rideRepository.findActiveRideByDriver(driverId)
+            .map(this::mapToDto)
+            .orElse(null); // Return null if no ride exists (this prevents the 404 crash)
+}
 
     // --- Helpers ---
     private RideResponseDto mapToDto(Ride ride) {
-        RideResponseDto dto = new RideResponseDto();
-        dto.setRideId(ride.getId());
-        dto.setDriverName(ride.getDriver().getName());
-        dto.setVehicleDetails(ride.getDriver().getVehicleDetails());
-        dto.setSource(ride.getSource());
-        dto.setDestination(ride.getDestination());
-        dto.setStatus(ride.getStatus());
-        dto.setFare(Math.round(ride.getFare() * 100.0) / 100.0);
-        dto.setBookingTime(ride.getStartTime());
-        return dto;
-    }
+    RideResponseDto dto = new RideResponseDto();
+    dto.setRideId(ride.getId());
+    
+    // 🚀 ADD THIS: Get the name of the User who booked the ride
+    dto.setUserName(ride.getUser().getName()); 
+    
+    dto.setDriverName(ride.getDriver().getName());
+    dto.setVehicleDetails(ride.getDriver().getVehicleDetails());
+    dto.setSource(ride.getSource());
+    dto.setDestination(ride.getDestination());
+    dto.setStatus(ride.getStatus());
+    dto.setFare(Math.round(ride.getFare() * 100.0) / 100.0);
+    dto.setBookingTime(ride.getStartTime());
+    return dto;
+}
 
     @Override
     public List<String> getAvailableLocations() {

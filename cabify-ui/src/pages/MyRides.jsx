@@ -96,30 +96,6 @@ const MyRides = () => {
         <div className="nav-links">
             <button className="logout-btn" onClick={handleLogout}>Logout</button>
           </div>
-
-        <div className="contact-info">
-          <div className="contact-item">
-            <span className="icon">📞</span>
-            <div>
-              <p className="contact-label">Call Us Now</p>
-              <p className="contact-value">0413-225356</p>
-            </div>
-          </div>
-          <div className="contact-item">
-            <span className="icon">✉️</span>
-            <div>
-              <p className="contact-label">Email Now</p>
-              <p className="contact-value">info.cabify@gmail.com</p>
-            </div>
-          </div>
-          <div className="contact-item">
-            <span className="icon">📍</span>
-            <div>
-              <p className="contact-label">Location</p>
-              <p className="contact-value">Chennai, TamilNadu</p>
-            </div>
-          </div>
-        </div>
       </div>
 
       {/* MAIN CONTENT */}
@@ -190,54 +166,6 @@ const MyRides = () => {
         </div>
       </div>
 
-      {/* PAYMENT MODAL */}
-      {showPaymentModal && selectedRide && (
-        <div className="modal-overlay">
-          <div className="payment-modal">
-            <div className="receipt-header">
-              <h3>Ride Receipt</h3>
-              <p>Thank you for riding with Cabify!</p>
-            </div>
-
-            <div className="receipt-body">
-              <div className="receipt-row">
-                <span>Base Fare</span>
-                <span>₹{(selectedRide.fare * 0.8).toFixed(2)}</span>
-              </div>
-              <div className="receipt-row">
-                <span>Taxes (GST 18%)</span>
-                <span>₹{(selectedRide.fare * 0.18).toFixed(2)}</span>
-              </div>
-              <div className="receipt-row">
-                <span>Service Fee</span>
-                <span>₹{(selectedRide.fare * 0.02).toFixed(2)}</span>
-              </div>
-              <hr className="receipt-divider" />
-              <div className="receipt-row total">
-                <span>Total Amount</span>
-                <span>₹{selectedRide.fare.toFixed(2)}</span>
-              </div>
-            </div>
-
-            <div className="payment-actions">
-              <button 
-                className="pay-now-btn" 
-                onClick={handleConfirmPayment}
-                disabled={isProcessing}
-              >
-                {isProcessing ? "Processing..." : "PAY & COMPLETE"}
-              </button>
-              <button 
-                className="close-modal-btn" 
-                onClick={() => setShowPaymentModal(false)}
-                disabled={isProcessing}
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
