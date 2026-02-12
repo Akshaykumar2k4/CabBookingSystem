@@ -1,0 +1,117 @@
+/* Container */
+.driver-dashboard-wrapper {
+    min-height: 100vh;
+    background-color: #f4f7f6;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Nav Bar Fix */
+.driver-dashboard-wrapper .dashboard-nav {
+    background-color: #1a237e; /* Midnight Blue matching your Login */
+    padding: 15px 50px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+}
+
+.driver-dashboard-wrapper .logout-btn {
+    background: transparent;
+    border: 1px solid #ff4444;
+    color: #ff4444;
+    padding: 8px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.driver-dashboard-wrapper .logout-btn:hover {
+    background: #ff4444;
+    color: white;
+}
+
+/* Center Card */
+.driver-dashboard-wrapper .dashboard-content {
+    display: flex;
+    justify-content: center;
+    padding-top: 50px;
+}
+
+.driver-dashboard-wrapper .welcome-card {
+    background: white;
+    width: 90%;
+    max-width: 500px;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.driver-dashboard-wrapper h1 {
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.driver-dashboard-wrapper .highlight {
+    color: #1a237e;
+}
+
+/* Status Badge */
+.driver-dashboard-wrapper .status-badge {
+    display: inline-block;
+    padding: 5px 20px;
+    border-radius: 50px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+}
+
+.driver-dashboard-wrapper .status-badge.available {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+}
+
+.driver-dashboard-wrapper .status-badge.offline {
+    background-color: #ffebee;
+    color: #c62828;
+}
+
+/* Info Text */
+.driver-dashboard-wrapper .info-section {
+    text-align: left;
+    background: #f9f9f9;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 30px;
+}
+
+.driver-dashboard-wrapper .info-section p {
+    margin: 10px 0;
+    color: #555;
+}
+
+/* Toggle Button */
+.driver-dashboard-wrapper .toggle-btn {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.driver-dashboard-wrapper .btn-green {
+    background-color: #2e7d32;
+    color: white;
+}
+
+.driver-dashboard-wrapper .btn-red {
+    background-color: #c62828;
+    color: white;
+}
+
+.driver-dashboard-wrapper .toggle-btn:hover {
+    filter: brightness(1.1);
+}
