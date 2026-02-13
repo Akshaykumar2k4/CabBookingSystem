@@ -12,34 +12,51 @@ const DriverRides = () => {
     const [driver, setDriver] = useState(null);
 
     useEffect(() => {
-        const info = JSON.parse(localStorage.getItem('driverInfo'));
+        const storedInfo = localStorage.getItem('driverInfo');
         const token = localStorage.getItem('driverToken');
 
-        if (!token || !info) {
+        if (!token || !storedInfo) {
             navigate('/driver-login');
             return;
         }
+
+        const info = JSON.parse(storedInfo);
         setDriver(info);
-        fetchDriverHistory(info.driverId, token);
+        
+        // 🚀 Ensure we use the correct ID key (check if it's driverId or id)
+        const idToFetch = info.driverId || info.id; 
+        fetchDriverHistory(idToFetch, token);
     }, [navigate]);
 
     const fetchDriverHistory = async (driverId, token) => {
         try {
+            setLoading(true);
             const response = await axios.get(`http://localhost:8081/api/rides/history/${driverId}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             
-            const rawData = response.data.data || response.data || [];
-            
-            // Sort: Newest trips first
-            const sortedRides = [...rawData].sort((a, b) => 
-                new Date(b.bookingTime) - new Date(a.bookingTime)
-            );
+            // 🚀 FIX: More aggressive check for array data
+            let rawData = [];
+            if (Array.isArray(response.data)) {
+                rawData = response.data;
+            } else if (response.data && Array.isArray(response.data.data)) {
+                rawData = response.data.data;
+            } else if (response.data && typeof response.data === 'object') {
+                // If backend returns an object with a list inside
+                rawData = Object.values(response.data).find(val => Array.isArray(val)) || [];
+            }
+
+            // Sort: Newest trips first (handle null bookingTime safely)
+            const sortedRides = rawData.sort((a, b) => {
+                const dateB = b.bookingTime ? new Date(b.bookingTime) : 0;
+                const dateA = a.bookingTime ? new Date(a.bookingTime) : 0;
+                return dateB - dateA;
+            });
 
             setRides(sortedRides);
         } catch (err) {
             console.error("Error fetching history:", err);
-            setError("Failed to load your trip history.");
+            setError("Unable to reach the server. Please check if the backend is running.");
         } finally {
             setLoading(false);
         }
@@ -49,7 +66,6 @@ const DriverRides = () => {
 
     return (
         <div className="driver-rides-wrapper">
-            {/* TOP BAR - FIXED BLUE THEME */}
             <div className="top-bar">
                 <div className="logo-section" onClick={() => navigate('/driver-dashboard')} style={{cursor: 'pointer'}}>
                     <Logo theme="driver" />
@@ -60,37 +76,38 @@ const DriverRides = () => {
                     <button className="logout-btn-red" onClick={() => { localStorage.clear(); navigate('/driver-login'); }}>Logout</button>
                     <div className="profile-icon-circle-blue">
                         {driver.name.charAt(0).toUpperCase()}
+                    <div className="profile-icon-circle-blue" onClick={() => navigate('/driver-profile')} style={{cursor: 'pointer'}}>
+                        {driver.name ? driver.name.charAt(0).toUpperCase() : 'D'}
                     </div>
                 </div>
             </div>
 
-            {/* MAIN CONTENT AREA */}
             <div className="rides-bg-container">
                 <div className="glass-history-box-blue">
                     <div className="history-header">
-                        <h2>My trip logs</h2>
+                        <h2>My Trip Logs</h2>
                         <p>Total Completed: <span className="highlight-green">{rides.length}</span></p>
                     </div>
                     
-                    {loading && <p className="loading-text">Accessing ride data...</p>}
-                    {error && <p className="error-text">{error}</p>}
+                    {loading && <div className="loading-spinner">Accessing ride data...</div>}
+                    {error && <div className="error-box">{error}</div>}
                     
                     {!loading && !error && rides.length === 0 && (
                         <div className="empty-state">
-                            <p>You haven't completed any trips yet.</p>
-                            <button className="blue-action-btn" onClick={() => navigate('/driver-dashboard')}>Go to Dashboard</button>
+                            <p>No trip records found for your account.</p>
+                            <button className="blue-action-btn" onClick={() => navigate('/driver-dashboard')}>Return to Dashboard</button>
                         </div>
                     )}
 
                     <div className="rides-scroll-list">
                         {rides.map((ride) => (
-                            <div key={ride.rideId} className="glass-ride-card-blue">
+                            <div key={ride.rideId || Math.random()} className="glass-ride-card-blue">
                                 <div className="card-header">
                                     <span className="date">
-                                        📅 {new Date(ride.bookingTime).toLocaleDateString()} at {new Date(ride.bookingTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                                        📅 {ride.bookingTime ? new Date(ride.bookingTime).toLocaleDateString() : 'N/A'}
                                     </span>
-                                    <span className={`status-badge-blue ${ride.status.toLowerCase()}`}>
-                                        {ride.status}
+                                    <span className={`status-badge-blue ${(ride.status || 'pending').toLowerCase()}`}>
+                                        {ride.status || 'UNKNOWN'}
                                     </span>
                                 </div>
 
@@ -109,15 +126,15 @@ const DriverRides = () => {
                                 <div className="info-row">
                                     <div className="info-item">
                                         <small>Earnings</small>
-                                        <strong className="earning-text">₹{ride.fare}</strong>
+                                        <strong className="earning-text">₹{ride.fare || '0'}</strong>
                                     </div>
                                     <div className="info-item">
                                         <small>Passenger</small>
-                                        <strong>{ride.userName || "Customer"}</strong>
+                                        <strong>{ride.userName || ride.user?.name || "Customer"}</strong>
                                     </div>
                                     <div className="info-item">
                                         <small>Trip ID</small>
-                                        <strong>#{ride.rideId}</strong>
+                                        <strong>#{ride.rideId || '---'}</strong>
                                     </div>
                                 </div>
                             </div>

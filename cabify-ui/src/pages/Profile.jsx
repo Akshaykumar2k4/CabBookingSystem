@@ -82,9 +82,6 @@ const Profile = () => {
                         </div>
                     </div>
 
-                    <button className="edit-btn" onClick={() => alert("Feature coming soon!")}>
-                        Edit Profile
-                    </button>
                 </div>
             </div>
         </div>

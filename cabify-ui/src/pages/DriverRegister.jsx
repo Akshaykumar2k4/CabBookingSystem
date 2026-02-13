@@ -18,7 +18,13 @@ const DriverRegister = () => {
   });
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    // Feature: Capitalize specific driver fields
+    if (name === 'licenseNumber' || name === 'vehicleModel' || name === 'vehiclePlate') {
+      setFormData({ ...formData, [name]: value.toUpperCase() });
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
   };
 
   const handleRegister = async (e) => {
@@ -92,18 +98,18 @@ const DriverRegister = () => {
                   </div>
                   <div className="form-group">
                       <label>License Number</label>
-                      <input type="text" name="licenseNumber" placeholder="DL-123456" onChange={handleChange} required />
+                      <input type="text" name="licenseNumber" value={formData.licenseNumber} placeholder="DL-123456" onChange={handleChange} required />
                   </div>
                 </div>
 
                 <div className="driver-form-grid">
                   <div className="form-group">
                       <label>Vehicle Model</label>
-                      <input type="text" name="vehicleModel" placeholder="Toyota Prius" onChange={handleChange} required />
+                      <input type="text" name="vehicleModel" value={formData.vehicleModel} placeholder="Toyota Prius" onChange={handleChange} required />
                   </div>
                   <div className="form-group">
                       <label>Vehicle Plate</label>
-                      <input type="text" name="vehiclePlate" placeholder="KA-05-MX-1234" onChange={handleChange} required />
+                      <input type="text" name="vehiclePlate" value={formData.vehiclePlate} placeholder="KA-05-MX-1234" onChange={handleChange} required />
                   </div>
                 </div>
 
