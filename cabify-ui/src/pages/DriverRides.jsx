@@ -73,10 +73,12 @@ const DriverRides = () => {
                 
                 <div className="nav-links">
                     <button className="nav-btn-blue" onClick={() => navigate('/driver-dashboard')}>Dashboard</button>
+                    <button className="logout-btn-red" onClick={() => { localStorage.clear(); navigate('/driver-login'); }}>Logout</button>
+                    <div className="profile-icon-circle-blue">
+                        {driver.name.charAt(0).toUpperCase()}
                     <div className="profile-icon-circle-blue" onClick={() => navigate('/driver-profile')} style={{cursor: 'pointer'}}>
                         {driver.name ? driver.name.charAt(0).toUpperCase() : 'D'}
                     </div>
-                    <button className="logout-btn-red" onClick={() => { localStorage.clear(); navigate('/driver-login'); }}>Logout</button>
                 </div>
             </div>
 
@@ -111,13 +113,13 @@ const DriverRides = () => {
 
                                 <div className="route-row">
                                     <div className="route-point">
-                                        <span className="dot source-blue">🔵</span>
-                                        <span>{ride.source || 'Unknown Pickup'}</span>
+                                        <span className="dot source-blue">🟢</span>
+                                        <span>{ride.source}</span>
                                     </div>
                                     <div className="route-arrow-blue">➝</div>
                                     <div className="route-point">
-                                        <span className="dot dest-red">🏁</span>
-                                        <span>{ride.destination || 'Unknown Drop'}</span>
+                                        <span className="dot dest-red">🔴</span>
+                                        <span>{ride.destination}</span>
                                     </div>
                                 </div>
 
