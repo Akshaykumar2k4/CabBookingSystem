@@ -11,14 +11,13 @@ const DriverDashboard = () => {
     const [activeRide, setActiveRide] = useState(null); 
     const [loadingRide, setLoadingRide] = useState(false);
     
-    // Receipt Modal States (Ported from User Module)
+    // Modal States
     const [showPaymentModal, setShowPaymentModal] = useState(false);
     const [completedRideData, setCompletedRideData] = useState(null);
 
     useEffect(() => {
         const token = localStorage.getItem('driverToken');
         const info = JSON.parse(localStorage.getItem('driverInfo'));
-
         if (!token || !info) {
             navigate('/driver-login');
         } else {
@@ -35,12 +34,12 @@ const DriverDashboard = () => {
                 `http://localhost:8081/api/rides/active-request/${driver.driverId}`,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
-            
             if (response.data && response.data.data) {
                 setActiveRide(response.data.data);
-                setStatus('BUSY'); // Keep status as Busy while ride is active
+                setStatus('BUSY'); 
             } else if (status === 'BUSY') {
-                setActiveRide(null); // Clear card if ride is gone
+                setActiveRide(null); 
+                setStatus('AVAILABLE');
             }
         } catch (err) {
             console.warn("Polling for active ride...");
@@ -60,8 +59,7 @@ const DriverDashboard = () => {
         try {
             await axios.put(
                 `http://localhost:8081/api/drivers/status/${driver.driverId}?status=${newStatus}`,
-                {}, 
-                { headers: { Authorization: `Bearer ${token}` } }
+                {}, { headers: { Authorization: `Bearer ${token}` } }
             );
             setStatus(newStatus);
             const updatedInfo = { ...driver, status: newStatus };
@@ -79,34 +77,21 @@ const DriverDashboard = () => {
         try {
             const response = await axios.put(
                 `http://localhost:8081/api/rides/${activeRide.rideId}/end`,
-                {},
-                { headers: { Authorization: `Bearer ${token}` } }
+                {}, { headers: { Authorization: `Bearer ${token}` } }
             );
-            
             if (response.status === 200) {
-                // 🚀 Capture backend data and show Modal
                 setCompletedRideData(response.data.data);
                 setShowPaymentModal(true);
-
-                // 🚀 Flip Status back to AVAILABLE
                 setStatus('AVAILABLE');
                 const updatedInfo = { ...driver, status: 'AVAILABLE' };
                 localStorage.setItem('driverInfo', JSON.stringify(updatedInfo));
                 setDriver(updatedInfo);
-
                 setActiveRide(null);
             }
         } catch (error) {
-            alert("Error ending ride. Please try again.");
+            alert("Error ending ride.");
         } finally {
             setLoadingRide(false);
-        }
-    };
-
-    const handleLogout = () => {
-        if (window.confirm("Are you sure you want to logout?")) {
-            localStorage.clear();
-            navigate('/driver-login');
         }
     };
 
@@ -114,6 +99,28 @@ const DriverDashboard = () => {
 
     return (
         <div className="driver-dashboard-wrapper">
+            {/* 🚀 MODAL OVERLAY: STICKY TOP LAYER WITH BLUR */}
+            {showPaymentModal && completedRideData && (
+                <div className="modal-overlay">
+                    <div className="payment-modal">
+                        <div className="receipt-header">
+                            <h3>Ride Receipt</h3>
+                            <p>Trip Completed for {completedRideData.userName}</p>
+                        </div>
+                        <div className="receipt-body">
+                            <div className="receipt-row"><span>Base Fare</span><span>₹{(completedRideData.fare * 0.8).toFixed(2)}</span></div>
+                            <div className="receipt-row"><span>Taxes (GST 18%)</span><span>₹{(completedRideData.fare * 0.18).toFixed(2)}</span></div>
+                            <div className="receipt-row"><span>Service Fee</span><span>₹{(completedRideData.fare * 0.02).toFixed(2)}</span></div>
+                            <hr className="receipt-divider" />
+                            <div className="receipt-row total"><span>Total Amount</span><span>₹{completedRideData.fare.toFixed(2)}</span></div>
+                        </div>
+                        <div className="payment-actions">
+                            <button className="pay-now-btn" onClick={() => setShowPaymentModal(false)}>Confirm & Close</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <div className="top-bar">
                 <div className="logo-section" onClick={() => navigate('/driver-dashboard')} style={{ cursor: 'pointer' }}>
                     <Logo theme="driver" />
@@ -121,10 +128,10 @@ const DriverDashboard = () => {
                 <div className="contact-info">
                     <div className="nav-links">
                         <button className="nav-btn" onClick={() => navigate('/driver-rides')}>My Rides</button>
+                         <button className="logout-btn" onClick={() => { localStorage.clear(); navigate('/driver-login'); }}>Logout</button>
                         <div className="profile-icon-circle" onClick={() => navigate('/driver-profile')}>
                             {driver.name ? driver.name.charAt(0).toUpperCase() : 'D'}
                         </div>
-                        <button className="logout-btn" onClick={handleLogout}>Logout</button>
                     </div>
                 </div>
             </div>
@@ -137,76 +144,40 @@ const DriverDashboard = () => {
                             <div className={`status-badge ${status.toLowerCase()}`}>{status}</div>
                         </div>
                         <div className="info-section">
-                            <p><strong>Vehicle:</strong> {driver.vehicleDetails}</p>
-                            <p><strong>License:</strong> {driver.licenseNumber}</p>
+                            <p className="ride-info-line"><strong>Vehicle:</strong> {driver.vehicleDetails}</p>
+                            <p className="ride-info-line"><strong>License:</strong> {driver.licenseNumber}</p>
                         </div>
                         <div className="toggle-container">
-                            <button 
-                                onClick={handleToggleStatus} 
-                                className={`main-toggle-btn ${status === 'AVAILABLE' || status === 'BUSY' ? 'is-online' : 'is-offline'}`}
-                                disabled={status === 'BUSY'}
-                            >
-                                <span>{status === 'OFFLINE' ? 'GO ONLINE' : 'GO OFFLINE'}</span>
+                            <button onClick={handleToggleStatus} className={`main-toggle-btn ${status === 'AVAILABLE' || status === 'BUSY' ? 'is-online' : 'is-offline'}`} disabled={status === 'BUSY'}>
+                                <span>{status === 'OFFLINE' ? 'Go online' : 'Go offline'}</span>
                             </button>
                         </div>
                     </div>
 
-                    <div className="right-column">
-                        <div className="card stats-container">
-                            <h3>Shift Performance</h3>
-                            <div className="stats-grid">
-                                <div className="stat-box"><span className="stat-value">0</span><span className="stat-label">Rides</span></div>
-                                <div className="stat-box"><span className="stat-value">₹ 0.00</span><span className="stat-label">Earnings</span></div>
-                                <div className="stat-box"><span className="stat-value">4.8★</span><span className="stat-label">Rating</span></div>
+                    {activeRide ? (
+                        <div className="card current-ride-card">
+                            <div className="ride-header">
+                                <span className="live-dot"></span>
+                                <h3>Active Ride Assigned</h3>
+                            </div>
+                            <div className="ride-details-body">
+                                <p className="ride-info-line"><strong>Passenger:</strong> {activeRide.userName}</p>
+                                <p className="ride-info-line"><strong>Pickup:</strong> {activeRide.source}</p>
+                                <p className="ride-info-line"><strong>Destination:</strong> {activeRide.destination}</p>
+                                <p className="ride-info-line"><strong>Fare:</strong> <span className="fare-text">₹ {activeRide.fare}</span></p>
+                                <button className="end-ride-btn" onClick={handleEndRide} disabled={loadingRide}>
+                                    {loadingRide ? "COMPLETING..." : "END RIDE"}
+                                </button>
                             </div>
                         </div>
-
-                        {activeRide ? (
-                            <div className="card current-ride-card">
-                                <div className="ride-header">
-                                    <span className="live-dot"></span>
-                                    <h3>Active Ride Assigned</h3>
-                                </div>
-                                <div className="ride-details-body">
-                                    <div className="detail-row"><label>PASSENGER</label><p>{activeRide.userName}</p></div>
-                                    <div className="detail-row"><label>PICKUP</label><p>{activeRide.pickupLocation}</p></div>
-                                    <div className="detail-row"><label>DESTINATION</label><p>{activeRide.dropLocation}</p></div>
-                                    <div className="detail-row"><label>FARE</label><p className="fare-text">₹ {activeRide.fare}</p></div>
-                                    <button className="end-ride-btn" onClick={handleEndRide} disabled={loadingRide}>
-                                        {loadingRide ? "COMPLETING..." : "END RIDE / COLLECT CASH"}
-                                    </button>
-                                </div>
-                            </div>
-                        ) : (
-                            <div className="card no-ride-placeholder">
-                                <p>{status === 'AVAILABLE' ? "Waiting for requests..." : "Go Online to see rides"}</p>
-                            </div>
-                        )}
-                    </div>
+                    ) : (
+                        <div className="card no-ride-placeholder">
+                            <h3>No Active Ride</h3>
+                            <p>{status === 'AVAILABLE' ? "Waiting for requests..." : "Go Online to see rides"}</p>
+                        </div>
+                    )}
                 </div>
             </div>
-
-            {/* 🚀 MODAL: MATCHING USER RECEIPT MODULE */}
-            {showPaymentModal && completedRideData && (
-                <div className="modal-overlay">
-                    <div className="payment-modal">
-                        <div className="receipt-header">
-                            <h3>Ride Receipt</h3>
-                            <p>Thank you for choosing Cabify, {completedRideData.userName}!</p>
-                        </div>
-                        <div className="receipt-body">
-                            <div className="receipt-row"><span>Base Fare</span><span>₹{(completedRideData.fare * 0.8).toFixed(2)}</span></div>
-                            <div className="receipt-row"><span>Taxes (GST 18%)</span><span>₹{(completedRideData.fare * 0.18).toFixed(2)}</span></div>
-                            <div className="receipt-row"><span>Service Fee</span><span>₹{(completedRideData.fare * 0.02).toFixed(2)}</span></div>
-                            <hr className="receipt-divider" />
-                            <div className="receipt-row total"><span>Total Amount</span><span>₹{completedRideData.fare.toFixed(2)}</span></div>
-                        </div>
-                        <div className="payment-actions">
-                            <button className="pay-now-btn" onClick={() => setShowPaymentModal(false)}>CONFIRM & CLOSE</button>
-                        </div>
-                    </div>
-                </div>
-            )}
         </div>
     );
 };
