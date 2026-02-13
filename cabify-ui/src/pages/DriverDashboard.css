@@ -14,7 +14,7 @@
 
 /* 1. TOP BAR (SYNCED WITH BOOKING PAGE) */
 .driver-dashboard-wrapper .top-bar {
-    background-color: #000 !important;
+    background-color: #000000 !important;
     padding: 10px 50px !important;
     display: flex !important;
     justify-content: space-between !important;
