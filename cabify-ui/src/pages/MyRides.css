@@ -18,33 +18,6 @@
   z-index: 10;
   color: white; /* Ensure text is white */
 }
-
-/* Contact Info Styles */
-.contact-info {
-  display: flex;
-  gap: 30px;
-}
-.contact-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.icon {
-  font-size: 1.5rem;
-  color: #ffcc00;
-}
-.contact-label {
-  font-size: 0.8rem;
-  color: #777;
-  margin: 0;
-}
-.contact-value {
-  font-size: 0.95rem;
-  font-weight: bold;
-  color: #fff; /* White text for dark bar */
-  margin: 0;
-}
-
 /* 3. Background Container - Same Image */
 .rides-bg-container {
   flex: 1;
@@ -58,7 +31,6 @@
   background-position: center;
   padding: 20px;
 }
-
 /* 4. The Glass Box (Wider for the list) */
 .glass-history-box {
   background: rgba(0, 0, 0, 0.6);
@@ -96,7 +68,7 @@
   width: 6px;
 }
 .rides-scroll-list::-webkit-scrollbar-thumb {
-  background: #ffcc00;
+  background: #ffcc00 !important;
   border-radius: 3px;
 }
 
@@ -189,23 +161,6 @@
   color: #ffcc00;
 }
 
-/* End Ride Button */
-.glass-end-btn {
-  width: 100%;
-  margin-top: 15px;
-  padding: 10px;
-  background-color: #ff4444;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: 0.3s;
-}
-.glass-end-btn:hover {
-  background-color: #cc0000;
-}
-
 /* Empty State */
 .empty-state {
   text-align: center;
@@ -239,17 +194,4 @@
   box-shadow: 0 0 10px rgba(255, 68, 68, 0.4);
 }
 
-/* Modal Overlay Background */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.8);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-  backdrop-filter: blur(5px);
-}
+

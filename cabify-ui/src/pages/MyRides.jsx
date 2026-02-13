@@ -9,10 +9,6 @@ const MyRides = () => {
   const [rides, setRides] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [showPaymentModal, setShowPaymentModal] = useState(false);
-  const [selectedRide, setSelectedRide] = useState(null);
-  const [isProcessing, setIsProcessing] = useState(false);
- 
   const [userName, setUserName] = useState(localStorage.getItem('userName') || '');
  
   useEffect(() => {
@@ -49,41 +45,43 @@ const MyRides = () => {
       setLoading(false);
     }
   };
- 
-  const initiatePayment = (ride) => {
-    setSelectedRide(ride);
-    setShowPaymentModal(true);
-  };
- 
+  useEffect(() => {
+    // Check if there's an active ride that isn't finished yet
+    const hasActiveRide = rides.some(r => r.status === 'BOOKED' || r.status === 'IN_PROGRESS');
+
+    if (!hasActiveRide) return;
+
+    // Start a timer to check the database every 3 seconds
+    const pollInterval = setInterval(async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axios.get('http://localhost:8081/api/rides/history', {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            
+            const currentRides = response.data.data || [];
+            // Find the most recent ride in the list
+            const latest = currentRides.sort((a, b) => new Date(b.bookingTime) - new Date(a.bookingTime))[0];
+
+            // 🚀 THE REDIRECT TRIGGER
+            // When the driver ends the ride, the status updates to PAID on the backend
+            if (latest && latest.status === 'PAID') {
+                clearInterval(pollInterval); // Stop the timer
+                // Send the user to your existing Feedback component immediately
+                navigate('/feedback', { state: { rideId: latest.rideId } });
+            }
+        } catch (err) {
+            console.error("Simultaneous check failed:", err);
+        }
+    }, 3000); 
+
+    // Clean up the interval if the user leaves the page
+    return () => clearInterval(pollInterval);
+}, [rides, navigate]);
   const handleLogout = () => {
     if (window.confirm("Are you sure you want to logout?")) {
       localStorage.clear();
       navigate('/login');
-    }
-  };
- 
-  // --- UPDATED FUNCTION ---
-  const handleConfirmPayment = async () => {
-    if (!selectedRide) return;
-   
-    setIsProcessing(true);
-    try {
-      const token = localStorage.getItem('token');
-      await axios.put(`http://localhost:8081/api/rides/${selectedRide.rideId}/end`, {}, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-     
-      // Close the modal
-      setShowPaymentModal(false);
-     
-      // Redirect to feedback page and pass the rideId in state
-      navigate('/feedback', { state: { rideId: selectedRide.rideId } });
- 
-    } catch (err) {
-      console.error(err);
-      alert("Payment Failed. Please try again.");
-    } finally {
-      setIsProcessing(false);
     }
   };
  
@@ -101,7 +99,7 @@ const MyRides = () => {
        
         <div className="nav-links">
             <button className="nav-btn" onClick={() => navigate('/booking')}>New Ride</button>
-           
+            <button className="logout-btn" onClick={handleLogout}>Logout</button>
             <div
               className="profile-icon-circle"
               onClick={() => navigate('/profile')}
@@ -117,37 +115,10 @@ const MyRides = () => {
                 justifyContent: 'center',
                 fontWeight: 'bold',
                 cursor: 'pointer',
-                marginLeft: '10px'
               }}
             >
               {userName ? userName.charAt(0).toUpperCase() : 'U'}
             </div>
- 
-            <button className="logout-btn" onClick={handleLogout}>Logout</button>
-        </div>
- 
-        <div className="contact-info">
-          <div className="contact-item">
-            <span className="icon">📞</span>
-            <div>
-              <p className="contact-label">Call Us Now</p>
-              <p className="contact-value">0413-225356</p>
-            </div>
-          </div>
-          <div className="contact-item">
-            <span className="icon">✉️</span>
-            <div>
-              <p className="contact-label">Email Now</p>
-              <p className="contact-value">info.cabify@gmail.com</p>
-            </div>
-          </div>
-          <div className="contact-item">
-            <span className="icon">📍</span>
-            <div>
-              <p className="contact-label">Location</p>
-              <p className="contact-value">Chennai, TamilNadu</p>
-            </div>
-          </div>
         </div>
       </div>
  
@@ -203,68 +174,11 @@ const MyRides = () => {
                     <strong>{ride.vehicleDetails || "N/A"}</strong>
                   </div>
                 </div>
- 
-                {(ride.status === 'BOOKED' || ride.status === 'IN_PROGRESS') && (
-                  <button
-                    className="glass-end-btn"
-                    onClick={() => initiatePayment(ride)}
-                  >
-                    End Ride
-                  </button>
-                )}
               </div>
             ))}
           </div>
         </div>
       </div>
- 
-      {showPaymentModal && selectedRide && (
-        <div className="modal-overlay">
-          <div className="payment-modal">
-            <div className="receipt-header">
-              <h3>Ride Receipt</h3>
-              <p>Thank you for riding with Cabify!</p>
-            </div>
- 
-            <div className="receipt-body">
-              <div className="receipt-row">
-                <span>Base Fare</span>
-                <span>₹{(selectedRide.fare * 0.8).toFixed(2)}</span>
-              </div>
-              <div className="receipt-row">
-                <span>Taxes (GST 18%)</span>
-                <span>₹{(selectedRide.fare * 0.18).toFixed(2)}</span>
-              </div>
-              <div className="receipt-row">
-                <span>Service Fee</span>
-                <span>₹{(selectedRide.fare * 0.02).toFixed(2)}</span>
-              </div>
-              <hr className="receipt-divider" />
-              <div className="receipt-row total">
-                <span>Total Amount</span>
-                <span>₹{selectedRide.fare.toFixed(2)}</span>
-              </div>
-            </div>
- 
-            <div className="payment-actions">
-              <button
-                className="pay-now-btn"
-                onClick={handleConfirmPayment}
-                disabled={isProcessing}
-              >
-                {isProcessing ? "Processing..." : "PAY & COMPLETE"}
-              </button>
-              <button
-                className="close-modal-btn"
-                onClick={() => setShowPaymentModal(false)}
-                disabled={isProcessing}
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

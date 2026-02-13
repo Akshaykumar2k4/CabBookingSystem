@@ -142,9 +142,9 @@ const Booking = () => {
 
         <div className="contact-info">
           <div className="nav-links">
-            <button className="nav-btn" onClick={() => navigate('/booking')}>New Ride</button>
             <button className="nav-btn" onClick={() => navigate('/my-rides')}>My Rides</button>
-            
+            <button className="logout-btn" onClick={handleLogout}>Logout</button>
+
             <div 
               className="profile-icon-circle" 
               onClick={() => navigate('/profile')}
@@ -165,17 +165,6 @@ const Booking = () => {
             >
               {userName ? userName.charAt(0).toUpperCase() : 'U'}
             </div>
-
-            <button className="logout-btn" onClick={handleLogout}>Logout</button>
-          </div>
-          
-          <div className="contact-item">
-            <span className="icon">📞</span>
-            <div><p className="contact-label">Call Us</p><p className="contact-value">0413-225356</p></div>
-          </div>
-          <div className="contact-item">
-            <span className="icon">✉️</span>
-            <div><p className="contact-label">Email</p><p className="contact-value">info@cabify.com</p></div>
           </div>
         </div>
       </div>

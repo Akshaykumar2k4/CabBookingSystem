@@ -76,44 +76,14 @@
 
 .logo-section { flex: 1; }
 
-.contact-info {
-  display: flex;
-  gap: 30px;
-}
 
-.contact-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: white;
-}
-
-.icon {
-  font-size: 1.2rem;
-  color: #ffcc00;
-}
-
-.contact-label {
-  font-size: 0.75rem;
-  color: #888;
-  margin: 0;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-.contact-value {
-  font-size: 0.9rem;
-  font-weight: bold;
-  margin: 0;
-  color: #fff;
-}
 
 /* 3. Main Background */
 .booking-container {
   flex: 1;
   display: flex;
-  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
-              url('https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?q=80&w=2070&auto=format&fit=crop');
+  background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+              url('https://images.unsplash.com/photo-1637080618498-b4a1cad84ae0?q=80&w=2070');
   background-size: cover;
   background-position: center;
   justify-content: center;

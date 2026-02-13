@@ -92,7 +92,7 @@
 
 .rides-scroll-list::-webkit-scrollbar { width: 6px !important; }
 .rides-scroll-list::-webkit-scrollbar-thumb {
-  background: #00d2ff !important; /* Fixed Blue Scrollbar */
+  background: #00d2ff; /* Fixed Blue Scrollbar */
   border-radius: 10px !important;
 }
 
