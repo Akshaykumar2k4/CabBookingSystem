@@ -56,7 +56,7 @@ const DriverRides = () => {
             setRides(sortedRides);
         } catch (err) {
             console.error("Error fetching history:", err);
-            setError("Unable to reach the server. Please check if the backend is running.");
+            setError("You have no rides so far");
         } finally {
             setLoading(false);
         }
