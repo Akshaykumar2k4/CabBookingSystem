@@ -124,11 +124,17 @@
     color: #000 !important;
 }
 
-.driver-dashboard-wrapper .main-toggle-btn:hover,
+.driver-dashboard-wrapper .main-toggle-btn.is-online:hover,
 .driver-dashboard-wrapper .end-ride-btn:hover,
 .driver-dashboard-wrapper .pay-now-btn:hover {
     transform: translateY(-3px) !important;
     box-shadow: 0 5px 15px rgba(255, 68, 68, 0.4) !important;
+}
+
+/* 2. Add Blue shadow for the "Go Online" button */
+.driver-dashboard-wrapper .main-toggle-btn.is-offline:hover {
+    transform: translateY(-3px) !important;
+    box-shadow: 0 5px 15px rgba(0, 210, 255, 0.6) !important; /* ✅ Blue shadow */
 }
 
 /* 🚀 MODAL OVERLAY: CENTERS THE RECEIPT & BLURS DASHBOARD */
@@ -166,6 +172,11 @@
 .fare-text { color: #00e676 !important; font-weight: bold !important; }
 
 /* Status Badges */
+.driver-dashboard-wrapper .no-ride-placeholder {
+    justify-content: center !important;
+    align-items: center !important;
+    text-align: center !important;
+}
 .driver-dashboard-wrapper .status-badge {
     display: inline-block !important;
     padding: 6px 15px !important;

@@ -144,7 +144,9 @@ const DriverDashboard = () => {
                             <div className={`status-badge ${status.toLowerCase()}`}>{status}</div>
                         </div>
                         <div className="info-section">
-                            <p className="ride-info-line"><strong>Vehicle:</strong> {driver.vehicleDetails}</p>
+                            <p className="ride-info-line">
+                                <strong>Vehicle:</strong> {driver.vehicleModel} ({driver.vehiclePlate})
+                            </p>
                             <p className="ride-info-line"><strong>License:</strong> {driver.licenseNumber}</p>
                         </div>
                         <div className="toggle-container">

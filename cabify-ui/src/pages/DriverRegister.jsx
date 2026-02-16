@@ -34,10 +34,11 @@ const DriverRegister = () => {
     const payload = {
         name: formData.name,
         phone: formData.phone,
+        email: formData.email,
+        password: formData.password,
         licenseNumber: formData.licenseNumber,
-        vehicleDetails: `${formData.vehicleModel} - ${formData.vehiclePlate}`,
-        email: formData.email,      // Make sure this isn't 'emailAddress' or 'userEmail'
-        password: formData.password  // Make sure this isn't 'pass' or 'pwd'
+        vehicleModel: formData.vehicleModel,
+        vehiclePlate: formData.vehiclePlate  
     };
 
     try {
