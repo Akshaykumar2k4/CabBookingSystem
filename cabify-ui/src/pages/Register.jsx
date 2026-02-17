@@ -3,7 +3,8 @@ import { Link, useNavigate } from 'react-router-dom'; // Import useNavigate to r
 import axios from 'axios'; // Import Axios
 import Logo from '../components/Logo';
 import './Login.css';
-
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 const Register = () => {
   const navigate = useNavigate(); // Hook to move user to Login page after success
 
@@ -35,20 +36,24 @@ const Register = () => {
 
       // 2. Handle Success
       console.log("Registration Success:", response.data);
-      alert("Registration Successful! Please Login.");
-      
-      // 3. Redirect to Login Page
-      navigate('/login');
+      toast.success("Registration Successful! Redirecting to login...", {
+        position: "top-right",
+        autoClose: 2000,
+      });
+
+      // Wait 2 seconds so they can read the toast before redirecting
+      setTimeout(() => navigate('/login'), 2000);
 
     } catch (error) {
       // 4. Handle Error
       console.error("Registration Error:", error);
       if (error.response) {
         // Server responded with a status code (like 400 or 500)
-        alert(`Error: ${error.response.data.message || "Registration Failed"}`);
+        toast.error(error.response.data.message || "Registration Failed. Please check your details.");
       } else {
         // Network error (Server is down)
-        alert("Server is not responding. Is Spring Boot running on 8081?");
+       // ⚠️ Network/Server Down Error
+      toast.error("Server is not responding. Please try again later.");
       }
     } finally {
       setLoading(false); // Re-enable button
@@ -57,7 +62,7 @@ const Register = () => {
 
   return (
     <div className="user-login-page-wrapper">
-      
+      <ToastContainer />
       {/* Top Bar */}
        <div className="top-bar">
         <div className="logo-section">

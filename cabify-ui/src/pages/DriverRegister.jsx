@@ -3,6 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Logo from '../components/Logo';
 import './DriverRegister.css';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const DriverRegister = () => {
   const navigate = useNavigate();
@@ -10,16 +12,16 @@ const DriverRegister = () => {
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
-    email: '', // Add to Entity later
-    password: '', // Add to Entity later
+    email: '',
+    password: '',
     licenseNumber: '',
-    vehicleModel: '', // Temporary local state
-    vehiclePlate: ''  // Temporary local state
+    vehicleModel: '',
+    vehiclePlate: ''
   });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    // Feature: Capitalize specific driver fields
+    // Capitalize specific driver fields for consistency
     if (name === 'licenseNumber' || name === 'vehicleModel' || name === 'vehiclePlate') {
       setFormData({ ...formData, [name]: value.toUpperCase() });
     } else {
@@ -30,7 +32,6 @@ const DriverRegister = () => {
   const handleRegister = async (e) => {
     e.preventDefault();
     
-    // 🚀 THE FIX: These keys MUST match the DriverDto exactly
     const payload = {
         name: formData.name,
         phone: formData.phone,
@@ -42,18 +43,44 @@ const DriverRegister = () => {
     };
 
     try {
-        const response = await axios.post("http://localhost:8081/api/drivers/register", payload);
-        alert("Success! You are now a Cabify Partner.");
-        navigate("/driver-login");
+        await axios.post("http://localhost:8081/api/drivers/register", payload);
+        
+        toast.success("Success! Welcome to the Cabify Fleet. 🚕", {
+            position: "top-right",
+            autoClose: 2000,
+        });
+
+        // Redirect after the user has time to read the success toast
+        setTimeout(() => navigate("/driver-login"), 2000);
+
     } catch (error) {
-        // This is what you just showed me in the console
-        console.error("🔥 Validation Error Details:", error.response?.data);
-        alert("Registration Failed: " + JSON.stringify(error.response?.data));
+        console.error("🔥 Registration Error:", error.response);
+
+        // Logic to extract specific error reasons (Duplicate Plate, Email, etc.)
+        let errorMessage = error.response?.data?.message;
+
+        if (!errorMessage && error.response?.data) {
+            // If backend sends validation object { license: "Already exists" }
+            if (typeof error.response.data === 'object') {
+                errorMessage = Object.values(error.response.data).join(", ");
+            } else {
+                errorMessage = error.response.data;
+            }
+        }
+
+        errorMessage = errorMessage || "Registration Failed. Please check your details.";
+
+        toast.error(`❌ ${errorMessage}`, {
+            position: "top-right",
+            autoClose: 5000,
+        });
     }
-};
+  };
 
   return (
     <div className="driver-login-page-wrapper">
+      <ToastContainer />
+      
       <div className="top-bar driver-theme">
         <div className="logo-section"><Logo theme="driver" /></div>
         <div className="contact-info">

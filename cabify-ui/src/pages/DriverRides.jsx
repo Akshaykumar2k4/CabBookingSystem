@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Logo from '../components/Logo';
 import './DriverRides.css';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const DriverRides = () => {
     const navigate = useNavigate();
@@ -10,7 +12,7 @@ const DriverRides = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [driver, setDriver] = useState(null);
-
+    const [isLoggingOut, setIsLoggingOut] = useState(false);
     useEffect(() => {
         const storedInfo = localStorage.getItem('driverInfo');
         const token = localStorage.getItem('driverToken');
@@ -27,10 +29,22 @@ const DriverRides = () => {
         const idToFetch = info.driverId || info.id; 
         fetchDriverHistory(idToFetch, token);
     }, [navigate]);
+   const handleLogout = () => {
+    setLoading(true); // 👈 This keeps the component from returning null
+    
+    toast.info("Logged out successfully. Drive safe!", {
+        position: "top-center",
+        autoClose: 1500,
+    });
 
+    setTimeout(() => {
+        localStorage.clear();
+        navigate('/driver-login');
+    }, 1500);
+};
     const fetchDriverHistory = async (driverId, token) => {
         try {
-            setLoading(true);
+            setIsLoggingOut(true);
             const response = await axios.get(`http://localhost:8081/api/rides/history/${driverId}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
@@ -62,10 +76,11 @@ const DriverRides = () => {
         }
     };
 
-    if (!driver) return null;
-
+    // Replace your current guard with this:
+if (!driver && !isLoggingOut) return null;
     return (
         <div className="driver-rides-wrapper">
+        <ToastContainer />  
             <div className="top-bar">
                 <div className="logo-section" onClick={() => navigate('/driver-dashboard')} style={{cursor: 'pointer'}}>
                     <Logo theme="driver" />
@@ -73,7 +88,7 @@ const DriverRides = () => {
                 
                 <div className="nav-links">
                     <button className="nav-btn-blue" onClick={() => navigate('/driver-dashboard')}>Dashboard</button>
-                    <button className="logout-btn-red" onClick={() => { localStorage.clear(); navigate('/driver-login'); }}>Logout</button>
+                    <button className="logout-btn-red" onClick={handleLogout}>Logout</button>
                     <div className="profile-icon-circle-blue" onClick={() => navigate('/driver-profile')} style={{cursor: 'pointer'}}>
                         {driver.name ? driver.name.charAt(0).toUpperCase() : 'D'}
                     </div>

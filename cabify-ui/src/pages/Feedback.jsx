@@ -3,6 +3,8 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import Logo from '../components/Logo';
 import './Feedback.css';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Feedback = () => {
     const navigate = useNavigate();
@@ -27,7 +29,7 @@ const Feedback = () => {
         }
 
         if (rating === 0) {
-            alert("Please select a star rating.");
+            toast.warning("Please select a star rating before submitting.");
             return;
         }
 
@@ -50,14 +52,17 @@ const Feedback = () => {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
-            alert("Thank you for your feedback! ⭐");
-            navigate('/booking'); 
+            toast.success("Thank you! Your feedback helps us improve.", {
+            position: "top-center",
+            autoClose: 2000,
+            });
+            setTimeout(() => navigate('/booking'), 2000);
         } catch (error) {
             // 3. LOGGING: This helps debug the 500 error
             console.error("Backend Error Details:", error.response?.data);
             
             const errorMsg = error.response?.data?.message || "Server Error: Could not save rating.";
-            alert(`Error: ${errorMsg}`);
+            toast.error(error.response?.data?.message || "Could not save rating. Please try again.");
             
             // If the error is a duplicate, we should exit the page
             if (error.response?.status === 400 || error.response?.status === 409) {
@@ -70,6 +75,7 @@ const Feedback = () => {
 
     return (
         <div className="feedback-page-wrapper">
+            <ToastContainer />
             <div className="top-bar">
                 <div className="logo-section" onClick={() => navigate('/booking')} style={{cursor: 'pointer'}}>
                     <Logo />

@@ -3,6 +3,8 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Logo from '../components/Logo';
 import './MyRides.css';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
  
 const MyRides = () => {
   const navigate = useNavigate();
@@ -36,9 +38,11 @@ const MyRides = () => {
       setRides(sortedRides);
     } catch (err) {
       console.error("Error fetching history:", err);
-      if (err.response && (err.response.status === 401 || err.response.status === 403)) {
+      if (err.response && (err.response.status === 401)) {
+          toast.error("Session expired. Please login.");
           navigate('/login');
       } else {
+          toast.error("Network error: Could not load ride history.");
           setError("Failed to load ride history.");
       }
     } finally {
@@ -66,10 +70,19 @@ const MyRides = () => {
             // 🚀 THE REDIRECT TRIGGER
             // When the driver ends the ride, the status updates to PAID on the backend
             if (latest && latest.status === 'PAID') {
-                clearInterval(pollInterval); // Stop the timer
-                // Send the user to your existing Feedback component immediately
-                navigate('/feedback', { state: { rideId: latest.rideId } });
-            }
+    clearInterval(pollInterval);
+    
+    // ✅ Tell them the ride is done before moving them
+    toast.success("Ride Completed! Hope you had a great trip.", {
+        position: "top-right",
+        autoClose: 2000
+    });
+
+    // Small delay so they see the toast
+    setTimeout(() => {
+        navigate('/feedback', { state: { rideId: latest.rideId } });
+    }, 2000);
+}
         } catch (err) {
             console.error("Simultaneous check failed:", err);
         }
@@ -79,15 +92,17 @@ const MyRides = () => {
     return () => clearInterval(pollInterval);
 }, [rides, navigate]);
   const handleLogout = () => {
-    if (window.confirm("Are you sure you want to logout?")) {
-      localStorage.clear();
-      navigate('/login');
-    }
+    localStorage.clear();
+    toast.info("Logged out successfully!", {
+      position: "top-center",
+      autoClose: 1500,
+    });
+    setTimeout(() => navigate('/login'), 1500);
   };
  
   return (
     <div className="my-rides-wrapper">
-     
+      <ToastContainer />
       <div className="top-bar">
         <div
           className="logo-section"

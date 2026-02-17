@@ -3,6 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Logo from '../components/Logo';
 import './DriverLogin.css';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const DriverLogin = () => {
   const navigate = useNavigate();
@@ -21,31 +23,41 @@ const DriverLogin = () => {
     try {
       const response = await axios.post('http://localhost:8081/api/drivers/login', formData);
       
-      // 🚀 THE FIX: Extracting data from your SuccessResponse structure
-      // response.data.data contains the DriverLoginResponseDto {token, driver}
       const loginData = response.data.data; 
       const token = loginData?.token;
       const driverInfo = loginData?.driver;
 
       if (token && driverInfo) {
-          // Save keys specifically for the driver portal
           localStorage.setItem('driverToken', token);
           localStorage.setItem('driverInfo', JSON.stringify(driverInfo)); 
           localStorage.setItem('driverEmail', formData.email); 
-          navigate('/driver-dashboard'); // 🚀 This will now trigger the redirect
+
+          toast.success(`Welcome back, ${driverInfo.name}! 🚕`, {
+            position: "top-right",
+            autoClose: 1500,
+          });
+
+          setTimeout(() => navigate('/driver-dashboard'), 1500);
       } else {
-          alert("Login Failed: Backend did not return a valid token.");
+          toast.error("Login Error: Server returned an invalid response.");
       }
 
     } catch (error) {
       console.error("Driver Login Error:", error);
-      alert("Login Failed: Incorrect Email or Password");
+      // ✅ Removed alert and added toast for consistency with User side
+      const errorMessage = error.response?.data?.message || "Invalid Email or Password";
+      toast.error(`❌ ${errorMessage}`, {
+        position: "top-right",
+        autoClose: 3000,
+      });
     }
   };
 
   return (
     <div className="driver-login-page-wrapper">
-      {/* 1. THE TOP BAR - UNCHANGED AS PER YOUR REQUEST */}
+      {/* ✅ Necessary Change: ToastContainer added to handle notifications */}
+      <ToastContainer />
+
       <div className="top-bar driver-theme">
         <div className="logo-section">
           <Logo theme="driver" />
@@ -75,7 +87,6 @@ const DriverLogin = () => {
         </div>
       </div>
 
-      {/* 2. THE MAIN LOGIN AREA */}
       <div className="login-container">
         <div className="login-box">
             <h2>Welcome Back, Partner!</h2>

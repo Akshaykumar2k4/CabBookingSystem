@@ -86,11 +86,10 @@ const Booking = () => {
   };
 
   const handleBookRide = async () => {
-    if (!source || !destination) { alert("Please select locations"); return; }
+    if (!source || !destination) { toast.warning("Please select both pickup and drop locations."); return; }
     
     if (!currentUserId) {
-        alert("Still loading your profile... Please wait a moment.");
-        return;
+      toast.info("Still loading your profile... Please wait.");        return;
     }
 
     setLoading(true);
@@ -110,8 +109,8 @@ const Booking = () => {
         toast.success(
           <div>
             <strong>Ride Confirmed!</strong> <br/>
-            Fare: ₹${finalFare} <br/>
-            Driver: ${responseData.driverName}
+            Fare: ₹{finalFare} <br/>
+            Driver: {responseData.driverName}
           </div>, 
           { autoClose: 3000 }
         );
@@ -119,7 +118,7 @@ const Booking = () => {
 
     } catch (error) {
         console.error("Booking Error:", error);
-        alert(error.response?.data?.message || "Booking Failed.");
+        toast.error(error.response?.data?.message || "Booking Failed. Please try again.");
     } finally {
         setLoading(false);
     }
@@ -128,10 +127,12 @@ const Booking = () => {
   const isInvalidRoute = source && destination && source === destination;
 
   const handleLogout = () => {
-    if (window.confirm("Are you sure you want to logout?")) {
-      localStorage.clear();
-      navigate('/login');
-    }
+    localStorage.clear();
+    toast.info("Logged out successfully. See you soon!", {
+      position: "top-center",
+      autoClose: 1500
+    });
+    setTimeout(() => navigate('/login'), 1500);
   };
 
   return (
