@@ -3,6 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Logo from '../components/Logo';
 import './Login.css';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -29,30 +31,33 @@ const Login = () => {
       const token = response.data.token || response.data.jwt || (response.data.data && response.data.data.token);
 
       if (token) {
-          // ✅ SUCCESS
           console.log("Login Success! Token:", token);
           
           // 3. CRITICAL: Save Token AND Email
           localStorage.setItem('token', token);
           localStorage.setItem('email', formData.email); // Booking page needs this!
           
-          alert("Login Successful!");
-          navigate('/booking'); // Redirect to Home
+          toast.success("Login Successful! Redirecting...", {
+            position: "top-right",
+            autoClose: 1500, 
+          });
+          setTimeout(() => {
+          navigate('/booking');
+          }, 1500); 
       } else {
-          // ❌ FAILURE
           console.error("Token missing in response:", response.data);
-          alert("Login Failed: Backend did not return a valid token.");
+          toast.error("Login Failed: Token not found.");
       }
 
     } catch (error) {
       console.error("Login Error:", error);
-      alert("Login Failed: Incorrect Email or Password");
+      toast.error("Invalid Email or Password. Please try again.");
     }
   };
 
   return (
     <div className="user-login-page-wrapper">
-      
+      <ToastContainer />
       {/* 1. THE TOP BAR */}
       <div className="top-bar">
         <div className="logo-section">

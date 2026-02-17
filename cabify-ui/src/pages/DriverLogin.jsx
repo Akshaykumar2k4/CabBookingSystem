@@ -32,8 +32,6 @@ const DriverLogin = () => {
           localStorage.setItem('driverToken', token);
           localStorage.setItem('driverInfo', JSON.stringify(driverInfo)); 
           localStorage.setItem('driverEmail', formData.email); 
-          
-          alert("Driver Login Successful!");
           navigate('/driver-dashboard'); // 🚀 This will now trigger the redirect
       } else {
           alert("Login Failed: Backend did not return a valid token.");

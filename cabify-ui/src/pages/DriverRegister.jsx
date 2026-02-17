@@ -115,7 +115,7 @@ const DriverRegister = () => {
                 </div>
 
                 <div className="form-group">
-                    <label>Email (For Login)</label>
+                    <label>Email </label>
                     <input type="email" name="email" placeholder="driver@cabify.com" onChange={handleChange} required />
                 </div>
 
