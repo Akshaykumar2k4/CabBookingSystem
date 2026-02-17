@@ -9,7 +9,8 @@ public class RideResponseDto {
     private Long rideId;
     private String userName;       // 🚀 ADD THIS: To show Passenger Name on Receipt
     private String driverName;     
-    private String vehicleDetails; 
+    private String vehicleModel; 
+    private String vehiclePlate;
     private String source;
     private String destination;
     private RideStatus status;      

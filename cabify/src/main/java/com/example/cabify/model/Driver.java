@@ -28,7 +28,10 @@ public class Driver {
     @Column(unique = true, nullable = false)
     private String licenseNumber;
 
-    private String vehicleDetails; 
+    private String vehicleModel; 
+
+    @Column(unique = true)
+    private String vehiclePlate; 
 
     @Enumerated(EnumType.STRING)
     private DriverStatus status = DriverStatus.AVAILABLE; // Default status

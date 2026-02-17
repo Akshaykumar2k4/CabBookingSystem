@@ -170,9 +170,13 @@ const MyRides = () => {
                     <strong>{ride.driverName || "Assigning..."}</strong>
                   </div>
                   <div className="info-item">
-                    <small>Vehicle</small>
-                    <strong>{ride.vehicleDetails || "N/A"}</strong>
-                  </div>
+                      <small>Vehicle</small>
+                      <strong>
+                        {ride.vehicleModel && ride.vehiclePlate 
+                          ? `${ride.vehicleModel} - ${ride.vehiclePlate}` 
+                          : (ride.vehicleModel || ride.vehiclePlate || "N/A")}
+                      </strong>
+                    </div>
                 </div>
               </div>
             ))}

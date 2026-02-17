@@ -20,20 +20,24 @@ public class DriverDto {
 
     @NotBlank(message = "Email is required")
     @Email(message = "Please provide a valid email address")
-    private String email; // 🚀 Matches Frontend
+    private String email; 
 
     @NotBlank(message = "Password is required")
     @Size(min = 6, message = "Password must be at least 6 characters")
-    private String password; // 🚀 Matches Frontend
+    private String password; 
 
     @NotBlank(message = "Phone number is required")
     private String phone;
 
     @NotBlank(message = "License number is required")
+    @Size(min = 5, message = "License number is too short")
     private String licenseNumber;
 
-    @NotBlank(message = "Vehicle details are required")
-    private String vehicleDetails; 
+    @NotBlank(message = "Vehicle model is required")
+    private String vehicleModel; 
+
+    @NotBlank(message = "Vehicle plate is required")
+    private String vehiclePlate;
 
     private DriverStatus status;
 }

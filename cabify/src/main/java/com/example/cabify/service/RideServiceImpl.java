@@ -234,7 +234,8 @@ public RideResponseDto getActiveRideForDriver(Long driverId) {
     dto.setUserName(ride.getUser().getName()); 
     
     dto.setDriverName(ride.getDriver().getName());
-    dto.setVehicleDetails(ride.getDriver().getVehicleDetails());
+    dto.setVehicleModel(ride.getDriver().getVehicleModel());
+    dto.setVehiclePlate(ride.getDriver().getVehiclePlate());
     dto.setSource(ride.getSource());
     dto.setDestination(ride.getDestination());
     dto.setStatus(ride.getStatus());

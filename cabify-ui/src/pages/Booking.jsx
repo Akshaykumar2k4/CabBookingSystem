@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Logo from '../components/Logo';
 import './Booking.css';
-
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 const Booking = () => {
   const navigate = useNavigate();
   
@@ -47,7 +48,7 @@ const Booking = () => {
     const email = localStorage.getItem('email'); 
 
     if (!email || !token) {
-        alert("Session expired. Please login again.");
+        toast.error("Session expired. Please login again.");
         navigate('/login');
         return;
     }
@@ -106,8 +107,15 @@ const Booking = () => {
 
         const responseData = response.data.data || response.data;
         const finalFare = responseData.fare;
-        alert(`Ride Confirmed!\nAmount: ₹${finalFare}\nDriver: ${responseData.driverName}`);
-        navigate('/my-rides'); 
+        toast.success(
+          <div>
+            <strong>Ride Confirmed!</strong> <br/>
+            Fare: ₹${finalFare} <br/>
+            Driver: ${responseData.driverName}
+          </div>, 
+          { autoClose: 3000 }
+        );
+        setTimeout(() => navigate('/my-rides'), 3000);
 
     } catch (error) {
         console.error("Booking Error:", error);
@@ -128,7 +136,7 @@ const Booking = () => {
 
   return (
     <div className="booking-page-wrapper">
-      
+      <ToastContainer />
       {/* 1. TOP BAR */}
       <div className="top-bar">
         {/* UPDATED: Added onClick and pointer cursor to logo-section */}
