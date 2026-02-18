@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Logo from '../components/Logo';
 import './DriverDashboard.css';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const DriverDashboard = () => {
     const navigate = useNavigate();
@@ -64,10 +66,30 @@ const DriverDashboard = () => {
             setStatus(newStatus);
             const updatedInfo = { ...driver, status: newStatus };
             localStorage.setItem('driverInfo', JSON.stringify(updatedInfo));
+            
+            // Add toast for status change
+            toast.info(`You are now ${newStatus.toLowerCase()}`, {
+                position: "top-center",
+                autoClose: 2000
+            });
+
             if (newStatus === 'AVAILABLE') fetchActiveRide();
         } catch (error) {
             console.error("Toggle failed:", error);
+            toast.error("Failed to update status");
         }
+    };
+
+    const handleLogout = () => {
+        toast.info("Logging out...", {
+            position: "top-right",
+            autoClose: 1000,
+        });
+        
+        setTimeout(() => {
+            localStorage.clear();
+            navigate('/driver-login');
+        }, 1000);
     };
 
     const handleEndRide = async () => {
@@ -87,9 +109,10 @@ const DriverDashboard = () => {
                 localStorage.setItem('driverInfo', JSON.stringify(updatedInfo));
                 setDriver(updatedInfo);
                 setActiveRide(null);
+                toast.success("Ride completed successfully!");
             }
         } catch (error) {
-            alert("Error ending ride.");
+            toast.error("Error ending ride.");
         } finally {
             setLoadingRide(false);
         }
@@ -99,6 +122,7 @@ const DriverDashboard = () => {
 
     return (
         <div className="driver-dashboard-wrapper">
+            <ToastContainer />
             {/* 🚀 MODAL OVERLAY: STICKY TOP LAYER WITH BLUR */}
             {showPaymentModal && completedRideData && (
                 <div className="modal-overlay">
@@ -128,7 +152,8 @@ const DriverDashboard = () => {
                 <div className="contact-info">
                     <div className="nav-links">
                         <button className="nav-btn" onClick={() => navigate('/driver-rides')}>My Rides</button>
-                         <button className="logout-btn" onClick={() => { localStorage.clear(); navigate('/driver-login'); }}>Logout</button>
+                         {/* Update the logout button to use handleLogout */}
+                         <button className="logout-btn" onClick={handleLogout}>Logout</button>
                         <div className="profile-icon-circle" onClick={() => navigate('/driver-profile')}>
                             {driver.name ? driver.name.charAt(0).toUpperCase() : 'D'}
                         </div>

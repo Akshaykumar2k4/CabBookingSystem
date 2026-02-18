@@ -45,7 +45,7 @@ const DriverRides = () => {
     const fetchDriverHistory = async (driverId, token) => {
         try {
             setIsLoggingOut(true);
-            const response = await axios.get(`http://localhost:8081/api/rides/history/${driverId}`, {
+            const response = await axios.get(`http://localhost:8081/api/rides/driver/history/${driverId}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             

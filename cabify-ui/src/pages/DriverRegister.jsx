@@ -31,7 +31,23 @@ const DriverRegister = () => {
 
   const handleRegister = async (e) => {
     e.preventDefault();
+    // 1. Define the Strict Patterns (Regex)
+    // License: 2 Letters, Hyphen, 6+ Digits (e.g., DL-123456)
+    const licensePattern = /^[A-Z]{2}-\d{6,}$/;
     
+    // Plate: 2 Letters, Hyphen, 2 Digits, Hyphen, 1-2 Letters, Hyphen, 4 Digits (e.g., KA-05-MX-1234)
+    const platePattern = /^[A-Z]{2}-\d{2}-[A-Z]{1,2}-\d{4}$/;
+
+    // 2. Validate the Form Data against these patterns
+    if (!licensePattern.test(formData.licenseNumber)) {
+        toast.warning("Invalid License Format! Expected: DL-123456");
+        return; // Stop the function here
+    }
+
+    if (!platePattern.test(formData.vehiclePlate)) {
+        toast.warning("Invalid Plate Format! Expected: KA-05-MX-1234");
+        return; // Stop the function here
+    }
     const payload = {
         name: formData.name,
         phone: formData.phone,

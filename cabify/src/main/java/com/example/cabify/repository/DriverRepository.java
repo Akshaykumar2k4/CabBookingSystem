@@ -17,7 +17,10 @@ public interface DriverRepository extends JpaRepository<Driver, Long> {
     List<Driver> findByStatus(DriverStatus status);
 
     // Optional: Check if a driver exists by license number (to prevent duplicates)
+    boolean existsByEmail(String email);
+    boolean existsByPhone(String phone);
     boolean existsByLicenseNumber(String licenseNumber);
+    boolean existsByVehiclePlate(String vehiclePlate);
 
     Optional<Driver> findFirstByStatus(DriverStatus available);
 

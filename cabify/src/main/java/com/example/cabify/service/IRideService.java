@@ -19,4 +19,6 @@ public interface IRideService {
     List<RideResponseDto> getMyRides(String email);
 
     public RideResponseDto getActiveRideForDriver(Long driverId);
+
+    List<RideResponseDto> getDriverRideHistory(Long driverId);
 }

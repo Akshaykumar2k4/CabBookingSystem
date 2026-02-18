@@ -6,9 +6,11 @@ import com.example.cabify.model.Driver;
 import com.example.cabify.model.DriverStatus;
 import com.example.cabify.repository.DriverRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -58,10 +60,25 @@ public class DriverServiceImpl implements IDriverService {
             throw new IllegalArgumentException("Invalid email format");
         }
 
-        // 4. Duplicate Check
+        // 4. Specific Duplicate Checks
+        if (driverRepository.existsByEmail(email)) {
+            log.error("Registration failed: Email {} already used", email);
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email is already registered!");
+        }
+
+        if (driverRepository.existsByPhone(phone)) {
+            log.error("Registration failed: Phone {} already used", phone);
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Phone number is already registered!");
+        }
+
         if (driverRepository.existsByLicenseNumber(license)) {
             log.error("Registration failed: License {} already used", license);
-            throw new IllegalStateException("License Number is already registered!");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "License Number is already registered!");
+        }
+
+        if (driverRepository.existsByVehiclePlate(vPlate)) {
+            log.error("Registration failed: Vehicle Plate {} already used", vPlate);
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Vehicle Plate is already registered to another driver!");
         }
 
         // 5. Map DTO to Entity for DB Storage

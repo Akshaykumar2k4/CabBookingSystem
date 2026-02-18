@@ -1,5 +1,6 @@
 package com.example.cabify.repository;
 
+import com.example.cabify.model.Driver;
 import com.example.cabify.model.Ride;
 import com.example.cabify.model.RideStatus;
 import com.example.cabify.model.User;
@@ -18,4 +19,5 @@ public interface RideRepository extends JpaRepository<Ride, Long> {
     boolean existsByUserAndStatus(User user, RideStatus status);
     @Query("SELECT r FROM Ride r WHERE r.driver.driverId = :driverId AND r.status = com.example.cabify.model.RideStatus.BOOKED")
     Optional<Ride> findActiveRideByDriver(@Param("driverId") Long driverId);
+    List<Ride> findByDriver(Driver driver);
 }

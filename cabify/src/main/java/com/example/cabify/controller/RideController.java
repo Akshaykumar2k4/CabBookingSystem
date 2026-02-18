@@ -122,4 +122,19 @@ public ResponseEntity<SuccessResponse<RideResponseDto>> getActiveRide(@PathVaria
         );
         return ResponseEntity.ok(response);
     }
+    // 4. Get Driver History (Matches your Frontend URL)
+    @GetMapping("/driver/history/{driverId}")
+    public ResponseEntity<SuccessResponse<List<RideResponseDto>>> getDriverHistory(@PathVariable Long driverId) {
+        
+        // You need to create this method in your Service
+        List<RideResponseDto> history = rideService.getDriverRideHistory(driverId);
+
+        SuccessResponse<List<RideResponseDto>> response = new SuccessResponse<>(
+                "Driver history fetched successfully",
+                HttpStatus.OK.value(),
+                history
+        );
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 }

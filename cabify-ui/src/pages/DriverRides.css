@@ -162,3 +162,8 @@
   border-radius: 20px !important;
   font-weight: bold !important;
 }
+
+.Toastify__toast-container {
+  z-index: 99999 !important;
+  position: fixed; 
+}

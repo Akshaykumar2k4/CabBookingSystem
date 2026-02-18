@@ -243,6 +243,22 @@ public RideResponseDto getActiveRideForDriver(Long driverId) {
     dto.setBookingTime(ride.getStartTime());
     return dto;
 }
+    
+
+    @Override
+    public List<RideResponseDto> getDriverRideHistory(Long driverId) {
+        // 1. Verify driver exists
+        driverRepository.findById(driverId)
+                .orElseThrow(() -> new ResourceNotFoundException("Driver not found with ID: " + driverId));
+
+        // 2. Fetch all rides for the driver
+        List<Ride> rides = rideRepository.findByDriver(driverRepository.getById(driverId));
+
+        // 3. Return list of DTOs
+        return rides.stream()
+                .map(this::mapToDto)
+                .collect(Collectors.toList());
+    }
 
     @Override
     public List<String> getAvailableLocations() {
@@ -270,4 +286,5 @@ public RideResponseDto getActiveRideForDriver(Long driverId) {
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Invalid Location: " + input));
     }
+
 }
