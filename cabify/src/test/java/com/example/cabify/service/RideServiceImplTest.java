@@ -2,6 +2,7 @@ package com.example.cabify.service;
 
 import com.example.cabify.dto.ride.RideRequestDto;
 import com.example.cabify.dto.ride.RideResponseDto;
+import com.example.cabify.exception.ResourceNotFoundException;
 import com.example.cabify.model.*;
 import com.example.cabify.repository.DriverRepository;
 import com.example.cabify.repository.RideRepository;
@@ -37,15 +38,14 @@ public class RideServiceImplTest {
     // TEST 1: Successful Booking
     @Test
     public void testBookRide_Success() {
-        // 1. Prepare Data
         RideRequestDto request = new RideRequestDto();
         request.setUserId(1L);
-        request.setDriverId(101L);
         request.setSource("Adyar");
         request.setDestination("Guindy");
 
         User mockUser = new User();
         mockUser.setUserId(1L);
+        mockUser.setName("Akshay");
 
         Driver mockDriver = new Driver();
         mockDriver.setDriverId(101L);
@@ -56,20 +56,19 @@ public class RideServiceImplTest {
         mockSavedRide.setFare(70.0);
         mockSavedRide.setDriver(mockDriver);
         mockSavedRide.setStatus(RideStatus.BOOKED);
+        mockSavedRide.setUser(mockUser); // Prevents NPE
 
-        // 2. Train Mocks
         Mockito.when(userRepository.findById(1L)).thenReturn(Optional.of(mockUser));
-        Mockito.when(driverRepository.findById(101L)).thenReturn(Optional.of(mockDriver));
+        Mockito.when(driverRepository.findFirstByStatus(DriverStatus.AVAILABLE))
+                .thenReturn(Optional.of(mockDriver));
         Mockito.when(rideRepository.existsByUserAndStatus(mockUser, RideStatus.BOOKED)).thenReturn(false);
         Mockito.when(rideRepository.save(any(Ride.class))).thenReturn(mockSavedRide);
 
-        // 3. Run
         RideResponseDto result = rideServiceImpl.bookRide(request);
 
-        // 4. Verify
         Assertions.assertNotNull(result);
         Assertions.assertEquals(500L, result.getRideId());
-        Mockito.verify(driverRepository).save(mockDriver);
+        Mockito.verify(driverRepository).findFirstByStatus(DriverStatus.AVAILABLE);
     }
 
     // TEST 2: Check Locations List
@@ -81,10 +80,11 @@ public class RideServiceImplTest {
         Assertions.assertTrue(locations.contains("Guindy"));
     }
 
-    // TEST 3: Invalid Route (UPDATED MESSAGE)
+    // TEST 3: Invalid Route
     @Test
     public void testBookRide_InvalidRoute_ShouldThrowException() {
         RideRequestDto request = new RideRequestDto();
+        request.setUserId(1L);
         request.setSource("Moon");
         request.setDestination("Mars");
 
@@ -92,56 +92,51 @@ public class RideServiceImplTest {
             rideServiceImpl.bookRide(request);
         });
 
-        // Updated to match your validateAndFormat logic
         Assertions.assertTrue(exception.getMessage().contains("Invalid Location"));
     }
 
-    // TEST 4: Driver is Busy
+    // TEST 4: No Drivers Available (FIXED)
     @Test
-    public void testBookRide_DriverBusy_ShouldThrowException() {
+    public void testBookRide_NoDriversAvailable_ShouldThrowException() {
         RideRequestDto request = new RideRequestDto();
         request.setUserId(1L);
-        request.setDriverId(101L);
         request.setSource("Adyar");
         request.setDestination("Guindy");
 
         User mockUser = new User();
-        Driver busyDriver = new Driver();
-        busyDriver.setDriverId(101L);
-        busyDriver.setStatus(DriverStatus.BUSY);
 
         Mockito.when(userRepository.findById(1L)).thenReturn(Optional.of(mockUser));
-        Mockito.when(driverRepository.findById(101L)).thenReturn(Optional.of(busyDriver));
-        Mockito.when(rideRepository.existsByUserAndStatus(mockUser, RideStatus.BOOKED)).thenReturn(false);
 
-        Exception exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+        // REMOVED: Mockito.when(rideRepository.existsByUserAndStatus(...))
+        // REASON: The code fails at the driver check before reaching the ride check.
+
+        Mockito.when(driverRepository.findFirstByStatus(DriverStatus.AVAILABLE))
+                .thenReturn(Optional.empty());
+
+        Exception exception = Assertions.assertThrows(ResourceNotFoundException.class, () -> {
             rideServiceImpl.bookRide(request);
         });
 
-        Assertions.assertTrue(exception.getMessage().contains("Driver is currently BUSY"));
+        Assertions.assertTrue(exception.getMessage().contains("No cabs are currently available"));
     }
 
-    // TEST 5: User Already Has a Ride (UPDATED SETUP)
+    // TEST 5: User Already Has a Ride
     @Test
     public void testBookRide_UserAlreadyBusy_ShouldThrowException() {
         RideRequestDto request = new RideRequestDto();
         request.setUserId(1L);
-        // ADDED: Driver ID to prevent "Driver Not Found" error
-        request.setDriverId(101L);
         request.setSource("Adyar");
         request.setDestination("Guindy");
 
         User mockUser = new User();
         mockUser.setUserId(1L);
 
-        // ADDED: Mock Driver to prevent crash
-        Driver mockDriver = new Driver();
-        mockDriver.setDriverId(101L);
-
         Mockito.when(userRepository.findById(1L)).thenReturn(Optional.of(mockUser));
-        Mockito.lenient().when(driverRepository.findById(101L)).thenReturn(Optional.of(mockDriver));
 
-        // FORCE the User Busy Error
+        // We must provide a driver so the code proceeds to the "User Busy" check
+        Mockito.when(driverRepository.findFirstByStatus(DriverStatus.AVAILABLE))
+                .thenReturn(Optional.of(new Driver()));
+
         Mockito.when(rideRepository.existsByUserAndStatus(mockUser, RideStatus.BOOKED)).thenReturn(true);
 
         Exception exception = Assertions.assertThrows(IllegalStateException.class, () -> {
