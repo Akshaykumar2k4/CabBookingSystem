@@ -4,7 +4,6 @@ import com.example.cabify.dto.SuccessResponse;
 import com.example.cabify.dto.driver.DriverDto;
 import com.example.cabify.dto.driver.DriverLoginRequestDto;
 import com.example.cabify.dto.driver.DriverLoginResponseDto;
-import com.example.cabify.model.Driver;
 import com.example.cabify.service.IDriverService;
 import com.example.cabify.util.JwtUtil;
 import jakarta.validation.Valid;

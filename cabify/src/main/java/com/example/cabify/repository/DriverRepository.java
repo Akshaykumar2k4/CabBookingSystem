@@ -2,8 +2,6 @@ package com.example.cabify.repository;
 
 import com.example.cabify.model.Driver;
 import com.example.cabify.model.DriverStatus;
-import com.example.cabify.model.User;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

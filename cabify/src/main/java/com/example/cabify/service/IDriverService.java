@@ -2,9 +2,7 @@ package com.example.cabify.service;
 
 import com.example.cabify.dto.driver.DriverDto;
 import com.example.cabify.dto.driver.DriverLoginRequestDto;
-import com.example.cabify.model.Driver;
 
-import jakarta.validation.Valid;
 
 import java.util.List;
 

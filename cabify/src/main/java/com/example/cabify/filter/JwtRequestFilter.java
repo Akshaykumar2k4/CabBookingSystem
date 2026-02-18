@@ -1,9 +1,8 @@
 package com.example.cabify.filter;
 
 import com.example.cabify.service.CustomUserDetailsService;
-import com.example.cabify.service.CustomDriverDetailsService; // 🚀 Added this
+import com.example.cabify.service.CustomDriverDetailsService;
 import com.example.cabify.util.JwtUtil;
-import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
