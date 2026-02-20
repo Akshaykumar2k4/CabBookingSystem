@@ -134,7 +134,7 @@ const Register = () => {
                     value={formData.email}
                     onChange={handleChange}
                     placeholder="name@gmail.com"
-                    pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$"
+                    pattern="^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$"
                     /* 🚀 THIS TEXT will help the user understand why the popup appeared */
                     title="Email must include a dot and a domain extension (e.g., .com)"
                     required 

@@ -56,8 +56,11 @@ public class DriverServiceImpl implements IDriverService {
         if (license.length() < 5) {
             throw new IllegalArgumentException("Invalid License Number format");
         }
-        if (!email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
-            throw new IllegalArgumentException("Invalid email format");
+        if (!email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")) {
+            throw new IllegalArgumentException("Invalid email format. Domain must include a dot (e.g., .com)");
+        }
+        if (password.length() < 8 || !password.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).+$")) {
+            throw new IllegalArgumentException("Password must be at least 8 characters long with 1 uppercase, 1 lowercase, and 1 number");
         }
 
         // 4. Specific Duplicate Checks

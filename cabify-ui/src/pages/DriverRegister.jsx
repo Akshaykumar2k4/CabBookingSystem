@@ -21,33 +21,22 @@ const DriverRegister = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    // Capitalize specific driver fields for consistency
-    if (name === 'licenseNumber' || name === 'vehicleModel' || name === 'vehiclePlate') {
-      setFormData({ ...formData, [name]: value.toUpperCase() });
-    } else {
-      setFormData({ ...formData, [name]: value });
+    let finalValue = value;
+
+    if (name === 'phone') {
+        finalValue = value.replace(/[^0-9]/g, '').slice(0, 10);
+    } else if (name === 'licenseNumber' || name === 'vehicleModel' || name === 'vehiclePlate') {
+        finalValue = value.toUpperCase();
     }
-  };
+    setFormData((prev) => ({ 
+        ...prev, 
+        [name]: finalValue 
+    }));
+};
 
   const handleRegister = async (e) => {
     e.preventDefault();
-    // 1. Define the Strict Patterns (Regex)
-    // License: 2 Letters, Hyphen, 6+ Digits (e.g., DL-123456)
-    const licensePattern = /^[A-Z]{2}-\d{6,}$/;
-    
-    // Plate: 2 Letters, Hyphen, 2 Digits, Hyphen, 1-2 Letters, Hyphen, 4 Digits (e.g., KA-05-MX-1234)
-    const platePattern = /^[A-Z]{2}-\d{2}-[A-Z]{1,2}-\d{4}$/;
 
-    // 2. Validate the Form Data against these patterns
-    if (!licensePattern.test(formData.licenseNumber)) {
-        toast.warning("Invalid License Format! Expected: DL-123456");
-        return; // Stop the function here
-    }
-
-    if (!platePattern.test(formData.vehiclePlate)) {
-        toast.warning("Invalid Plate Format! Expected: KA-05-MX-1234");
-        return; // Stop the function here
-    }
     const payload = {
         name: formData.name,
         phone: formData.phone,
@@ -91,7 +80,7 @@ const DriverRegister = () => {
             autoClose: 5000,
         });
     }
-  };
+};
 
   return (
     <div className="driver-login-page-wrapper">
@@ -128,47 +117,105 @@ const DriverRegister = () => {
         <div className="login-box registration-box">
             <h2>Join the Fleet</h2>
             <p>Register as a partner to start earning</p>
-            
-            <form onSubmit={handleRegister}>
-                <div className="form-group">
-                    <label>Full Name</label>
-                    <input type="text" name="name" placeholder="John Doe" onChange={handleChange} required />
-                </div>
-
-                <div className="driver-form-grid">
+              <form onSubmit={handleRegister}>
                   <div className="form-group">
-                      <label>Phone Number</label>
-                      <input type="text" name="phone" placeholder="9876543210" onChange={handleChange} required />
+                      <label>Full Name</label>
+                      <input 
+                          type="text" 
+                          name="name" 
+                          value={formData.name} /* Added value binding */
+                          placeholder="John Doe" 
+                          onChange={handleChange} 
+                          required 
+                      />
                   </div>
+
+                  <div className="driver-form-grid">
+                      <div className="form-group">
+                          <label>Phone Number</label>
+                          <input 
+                              type="tel" /* Changed to tel */
+                              name="phone" 
+                              value={formData.phone} /* Added value binding */
+                              placeholder="9876543210" 
+                              onChange={handleChange} 
+                              pattern="[0-9]{10}" 
+                              title="Please enter exactly 10 digits"
+                              required 
+                          />
+                      </div>
+                      <div className="form-group">
+                          <label>License Number</label>
+                          <input 
+                              type="text" 
+                              name="licenseNumber" 
+                              value={formData.licenseNumber} 
+                              placeholder="DL-123456" 
+                              onChange={handleChange} 
+                              pattern="^[A-Z]{2}-\d{6,}$" 
+                              title="Expected format: DL-123456 (2 letters, hyphen, 6+ digits)"
+                              required 
+                          />
+                      </div>
+                  </div>
+
+                  <div className="driver-form-grid">
+                      <div className="form-group">
+                          <label>Vehicle Model</label>
+                          <input 
+                              type="text" 
+                              name="vehicleModel" 
+                              value={formData.vehicleModel} 
+                              placeholder="Toyota Prius" 
+                              onChange={handleChange} 
+                              required 
+                          />
+                      </div>
+                      <div className="form-group">
+                          <label>Vehicle Plate</label>
+                          <input 
+                              type="text" 
+                              name="vehiclePlate" 
+                              value={formData.vehiclePlate} 
+                              placeholder="KA-05-MX-1234" 
+                              onChange={handleChange} 
+                              pattern="^[A-Z]{2}-\d{2}-[A-Z]{1,2}-\d{4}$" 
+                              title="Expected format: KA-05-MX-1234"
+                              required 
+                          />
+                      </div>
+                  </div>
+
                   <div className="form-group">
-                      <label>License Number</label>
-                      <input type="text" name="licenseNumber" value={formData.licenseNumber} placeholder="DL-123456" onChange={handleChange} required />
+                      <label>Email </label>
+                      <input 
+                          type="email" 
+                          name="email" 
+                          value={formData.email} /* Added value binding */
+                          placeholder="driver@cabify.com" 
+                          onChange={handleChange} 
+                          pattern="^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$" 
+                          title="Please include a '.' and a valid domain extension (e.g., .com)"
+                          required 
+                      />
                   </div>
-                </div>
 
-                <div className="driver-form-grid">
                   <div className="form-group">
-                      <label>Vehicle Model</label>
-                      <input type="text" name="vehicleModel" value={formData.vehicleModel} placeholder="Toyota Prius" onChange={handleChange} required />
+                      <label>Password</label>
+                      <input 
+                          type="password" 
+                          name="password" 
+                          value={formData.password} /* Added value binding */
+                          placeholder="••••••••" 
+                          onChange={handleChange} 
+                          pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$" 
+                          title="Must be at least 8 characters long with 1 uppercase letter, 1 lowercase letter, and 1 number"
+                          required 
+                      />
                   </div>
-                  <div className="form-group">
-                      <label>Vehicle Plate</label>
-                      <input type="text" name="vehiclePlate" value={formData.vehiclePlate} placeholder="KA-05-MX-1234" onChange={handleChange} required />
-                  </div>
-                </div>
 
-                <div className="form-group">
-                    <label>Email </label>
-                    <input type="email" name="email" placeholder="driver@cabify.com" onChange={handleChange} required />
-                </div>
-
-                <div className="form-group">
-                    <label>Password</label>
-                    <input type="password" name="password" placeholder="••••••••" onChange={handleChange} required />
-                </div>
-
-                <button type="submit" className="login-btn">REGISTER AS DRIVER</button>
-            </form>
+                  <button type="submit" className="login-btn">REGISTER AS DRIVER</button>
+                </form>
 
             <p className="redirect-text">
                 Already a partner? <Link to="/driver-login">Login here</Link>
