@@ -76,7 +76,7 @@ const DriverProfile = () => {
 
                         <div className="info-group">
                             <label>VEHICLE & LICENSE</label>
-                            <p>{loading ? "..." : `${driver.vehicleDetails} | ${driver.licenseNumber}`}</p>
+                            <p>{loading ? "..." : `${driver.vehicleModel +" | "+ driver.vehiclePlate} | ${driver.licenseNumber || 'N/A'}`}</p>
                         </div>
 
                         <div className="info-group">
