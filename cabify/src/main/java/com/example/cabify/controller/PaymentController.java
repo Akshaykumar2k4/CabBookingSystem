@@ -3,7 +3,7 @@ package com.example.cabify.controller;
 import com.example.cabify.dto.SuccessResponse;
 import com.example.cabify.dto.payment.PaymentRequestDto;
 import com.example.cabify.dto.payment.PaymentResponseDto;
-import com.example.cabify.service.PaymentService;
+import com.example.cabify.service.IPaymentService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 public class PaymentController {
 
     @Autowired
-    private PaymentService paymentService;
+    private IPaymentService paymentService;
 
     // 1. Process a Payment
     @PostMapping("/process")

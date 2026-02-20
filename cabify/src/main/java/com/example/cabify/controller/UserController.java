@@ -5,7 +5,7 @@ import com.example.cabify.dto.user.AuthResponseDto;
 import com.example.cabify.dto.user.LoginRequestDto;
 import com.example.cabify.dto.user.UserProfileDto;
 import com.example.cabify.model.User;
-import com.example.cabify.service.UserServiceImpl;
+import com.example.cabify.service.IUserService;
 import com.example.cabify.util.JwtUtil;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,7 @@ import java.util.List;
 public class UserController {
 
     @Autowired
-    private UserServiceImpl userService;
+    private IUserService userService;
 
     @Autowired
     private AuthenticationManager authenticationManager;

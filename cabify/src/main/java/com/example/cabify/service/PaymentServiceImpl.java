@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class PaymentService implements IPaymentService { // <--- Implements Interface
+public class PaymentServiceImpl implements IPaymentService { // <--- Implements Interface
 
     @Autowired
     private PaymentRepository paymentRepository;
