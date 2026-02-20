@@ -23,6 +23,8 @@ public class User {
     private String email;
 
     private String name;
+    
+    @Column(unique = true, nullable = false)
     private Long phone;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)

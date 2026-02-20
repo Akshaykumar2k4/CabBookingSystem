@@ -37,18 +37,22 @@ public class UserServiceImpl implements IUserService {
         if (name.length() < 3 || name.length() > 20) {
             throw new IllegalArgumentException("Username should be between 3 to 20 characters");
         }
-        if (!email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
-            throw new IllegalArgumentException("Invalid email format");
+        if (!email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")) {
+            throw new IllegalArgumentException("Invalid email format. Domain must include a dot (e.g., .com)");
         }
         if (phone.length() != 10) {
             throw new IllegalArgumentException("Provide a valid 10-digit phone number");
         }
-        if (password.length() < 8) {
-            throw new IllegalArgumentException("Password length should be minimum of 8 characters");
+        if (password.length() < 8 || 
+            !password.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).+$")) {
+            throw new IllegalArgumentException("Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one number");
         }
 
         if (userRepository.existsByEmail(email)) {
             throw new IllegalStateException("Email is already registered!");
+        }
+        if (userRepository.existsByPhone(user.getPhone())) {
+            throw new IllegalStateException("This phone number is already registered!");
         }
 
         user.setPassword(passwordEncoder.encode(password));

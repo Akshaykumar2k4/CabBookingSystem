@@ -18,8 +18,20 @@ const Register = () => {
   const [loading, setLoading] = useState(false); // To show spinner/disable button
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+    const { name, value } = e.target;
+    let finalValue = value;
+
+    if (name === 'phone') {
+        // 🚀 THE FIX: Filter non-numbers AND limit to 10 digits in one go
+        finalValue = value.replace(/[^0-9]/g, '').slice(0, 10);
+    }
+
+    // Call setFormData exactly ONCE regardless of the field name
+    setFormData((prev) => ({ 
+        ...prev, 
+        [name]: finalValue 
+    }));
+};
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -45,18 +57,19 @@ const Register = () => {
       setTimeout(() => navigate('/login'), 2000);
 
     } catch (error) {
-      // 4. Handle Error
       console.error("Registration Error:", error);
+      
       if (error.response) {
-        // Server responded with a status code (like 400 or 500)
-        toast.error(error.response.data.message || "Registration Failed. Please check your details.");
+        const errorMsg = typeof error.response.data === 'string' 
+                         ? error.response.data 
+                         : (error.response.data.message || "Registration Failed.");
+        
+        toast.error(errorMsg);
       } else {
-        // Network error (Server is down)
-       // ⚠️ Network/Server Down Error
-      toast.error("Server is not responding. Please try again later.");
+        toast.error("Server is not responding. Please try again later.");
       }
     } finally {
-      setLoading(false); // Re-enable button
+      setLoading(false);
     }
   };
 
@@ -114,37 +127,45 @@ const Register = () => {
                     />
                 </div>
                 <div className="form-group">
-                    <label>Email</label>
+                  <label>Email</label>
                     <input 
-                      type="email" 
-                      name="email" 
-                      value={formData.email} 
-                      onChange={handleChange} 
-                      placeholder="john@mail.com" 
-                      required 
-                    />
+                    type="email" 
+                    name="email" 
+                    value={formData.email}
+                    onChange={handleChange}
+                    placeholder="name@gmail.com"
+                    pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$"
+                    /* 🚀 THIS TEXT will help the user understand why the popup appeared */
+                    title="Email must include a dot and a domain extension (e.g., .com)"
+                    required 
+                  />
                 </div>
                 <div className="form-group">
                     <label>Phone</label>
                     <input 
-                      type="number" 
+                      type="tel"              
                       name="phone" 
-                      value={formData.phone} 
-                      onChange={handleChange} 
-                      placeholder="9876543210" 
-                      required 
+                      value={formData.phone}
+                      onChange={handleChange}
+                      placeholder="9876543210"
+                      pattern="[0-9]{10}"        
+                      title="Please enter a valid 10-digit phone number"
+                      required
                     />
                 </div>
                 <div className="form-group">
                     <label>Password</label>
                     <input 
-                      type="password" 
-                      name="password" 
-                      value={formData.password} 
-                      onChange={handleChange} 
-                      placeholder="•••••••" 
-                      required 
-                    />
+                    type="password" 
+                    name="password" 
+                    value={formData.password} 
+                    onChange={handleChange} 
+                    placeholder="•••••••" 
+                    /* 🚀 THE FIX: Requires 1 uppercase, 1 lowercase, 1 number, and min 8 chars */
+                    pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$"
+                    title="Password must be at least 8 characters long and include one uppercase letter, one lowercase letter, and one number."
+                    required 
+                  />
                 </div>
 
                 <button type="submit" className="login-btn" disabled={loading}>
