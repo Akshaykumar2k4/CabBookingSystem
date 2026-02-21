@@ -33,6 +33,12 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
 
+        // CHANGE 1: Early return for CORS pre-flight requests to bypass security checks
+        if (request.getMethod().equalsIgnoreCase("OPTIONS")) {
+            chain.doFilter(request, response);
+            return;
+        }
+
         final String authorizationHeader = request.getHeader("Authorization");
         final String requestURI = request.getRequestURI(); // 🚀 Capture the URL path
 
@@ -41,16 +47,29 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
         try {
             if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-                jwt = authorizationHeader.substring(7);
+                // CHANGE 2: Add .trim() to strip whitespace
+                jwt = authorizationHeader.substring(7).trim();
+
+                // CHANGE 3: Structural validation to prevent parser exceptions
+                if (jwt.equals("null") || jwt.equals("undefined") || jwt.split("\\.").length != 3) {
+                    logger.warn("Rejected malformed JWT string from client: " + jwt);
+                    chain.doFilter(request, response);
+                    return; // Halt JWT processing and pass to the next filter
+                }
+
                 username = jwtUtil.extractUsername(jwt);
             }
 
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                
+
                 UserDetails userDetails;
 
                 // 🚀 SMART ROUTING: Check which database table to search based on the URL
-                if (requestURI.contains("/api/drivers")) {
+                if (requestURI.contains("/api/drivers") ||
+                        requestURI.contains("/active-request") ||
+                        requestURI.contains("/driver/history") ||
+                        requestURI.contains("/end")) {
+
                     // Look in the Drivers table
                     userDetails = this.driverDetailsService.loadUserByUsername(username);
                 } else {

@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -14,11 +15,14 @@ import java.util.function.Function;
 @Component
 public class JwtUtil {
 
-    // 🚀 FIXED KEY: Ensures signatures match after server restarts
-    private final String SECRET_STRING = "YourElectricBlueDriverPortalSecretKeyMustBeVeryLong123!";
-    private final SecretKey signInKey = Keys.hmacShaKeyFor(SECRET_STRING.getBytes(StandardCharsets.UTF_8));
+    private final SecretKey signInKey ;
 
     public static final long EXPIRATION_TIME = 1000 * 60 * 60 * 10; // 10 hours
+
+    public JwtUtil(@Value("${jwt.secret}") String secretString) {
+        // The byte array conversion and SecretKey generation now happen upon Bean instantiation
+        this.signInKey = Keys.hmacShaKeyFor(secretString.getBytes(StandardCharsets.UTF_8));
+    }
 
     public String generateToken(String userName) {
         return Jwts.builder()
