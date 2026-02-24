@@ -6,6 +6,6 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class DriverLoginResponseDto {
-    private String token; // 🚀 React is looking for this!
+    private String token; 
     private DriverDto driver;
 }

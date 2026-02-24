@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 @Data
 public class RideResponseDto {
     private Long rideId;
-    private String userName;       // 🚀 ADD THIS: To show Passenger Name on Receipt
+    private String userName; 
     private String driverName;     
     private String vehicleModel; 
     private String vehiclePlate;

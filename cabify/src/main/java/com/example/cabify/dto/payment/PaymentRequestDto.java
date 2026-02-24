@@ -15,7 +15,7 @@ public class PaymentRequestDto {
     private Long userId;
 
     @NotBlank(message = "Payment method is required")
-    // Optional: If you want to force specific values, use @Pattern
+    
     @Pattern(regexp = "^(CASH|CARD|UPI)$", message = "Invalid payment method")
     private String paymentMethod;
 }

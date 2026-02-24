@@ -125,6 +125,11 @@
   border: 1px solid #00e676 !important;
   background: rgba(0, 230, 118, 0.1) !important;
 }
+.status-badge-blue.booked {
+  color: #dfd50c !important;
+  border: 1px solid #f2ce18 !important;
+  background: rgba(0, 230, 118, 0.1) !important;
+}
 
 .route-arrow-blue { color: #00d2ff !important; font-weight: bold !important; }
 

@@ -58,7 +58,7 @@ public class RatingServiceImpl implements IRatingService {
 
     @Override
     public List<RatingResponseDto> getRatingsForUser(Long userId) {
-        // Assuming this endpoint is for a Passenger to see ratings they GAVE
+        
         List<Rating> ratings = ratingRepository.findByPassengerId(userId);
         return ratings.stream().map(this::mapToResponseDto).collect(Collectors.toList());
     }

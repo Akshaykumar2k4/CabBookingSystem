@@ -15,6 +15,9 @@ import com.example.cabify.dto.ride.RideResponseDto;
 import com.example.cabify.exception.ResourceNotFoundException;
 import com.example.cabify.model.Driver;
 import com.example.cabify.model.DriverStatus;
+import com.example.cabify.model.Payment;
+import com.example.cabify.model.PaymentMethod;
+import com.example.cabify.model.PaymentStatus;
 import com.example.cabify.model.Ride;
 import com.example.cabify.model.RideStatus;
 import com.example.cabify.model.User;
@@ -179,22 +182,31 @@ public class RideServiceImpl implements IRideService {
                     return new ResourceNotFoundException("Ride not found with ID: " + rideId);
                 });
 
-        if (ride.getStatus() == RideStatus.COMPLETED) {
-            log.warn("End Ride failed: Ride ID {} is already COMPLETED", rideId); 
+        if (ride.getStatus() == RideStatus.COMPLETED || ride.getStatus() == RideStatus.PAID) {
+            log.warn("End Ride failed: Ride ID {} is already COMPLETED or PAID", rideId); 
             throw new IllegalStateException("Ride is already completed!");
         }
 
-        // Update Status
+        // 1. Update Ride Status
         ride.setStatus(RideStatus.PAID);
         ride.setEndTime(LocalDateTime.now());
+
+        Payment payment = new Payment();
+        payment.setRide(ride); // Sync side 1
+        payment.setUser(ride.getUser());
+        payment.setAmount(ride.getFare());
+        payment.setPaymentMethod(PaymentMethod.UPI); // Or whatever default/logic you use
+        payment.setStatus(PaymentStatus.SUCCESS);
+        ride.setPayment(payment);
+
         rideRepository.save(ride);
 
-        // Unlock Driver
+        // 2. Unlock Driver
         Driver driver = ride.getDriver();
         driver.setStatus(DriverStatus.AVAILABLE);
         driverRepository.save(driver);
 
-        log.info("Ride ID {} completed successfully at {}", rideId, ride.getEndTime()); 
+        log.info("Ride ID {} completed successfully. Payment generated.", rideId); 
         return mapToDto(ride);
     }
 
@@ -230,7 +242,7 @@ public RideResponseDto getActiveRideForDriver(Long driverId) {
     RideResponseDto dto = new RideResponseDto();
     dto.setRideId(ride.getId());
     
-    // 🚀 ADD THIS: Get the name of the User who booked the ride
+   
     dto.setUserName(ride.getUser().getName()); 
     
     dto.setDriverName(ride.getDriver().getName());

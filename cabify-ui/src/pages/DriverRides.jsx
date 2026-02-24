@@ -69,9 +69,20 @@ const DriverRides = () => {
 
             setRides(sortedRides);
         } catch (err) {
-            console.error("Error fetching history:", err);
-            setError("You have no rides so far");
-        } finally {
+        console.error("Network error:", err);
+        if (err.response && (err.response.status === 401 || err.response.status === 403)) {
+            toast.error("Security Alert: Invalid or expired session. Please log in again.");
+            
+            // Scrub the corrupted data
+            localStorage.removeItem('driverToken');
+            localStorage.removeItem('driverInfo');
+            
+            // Eject the user
+            setTimeout(() => navigate('/driver-login'), 1500);
+        } else {
+            toast.error("Failed to load rides. Server might be down.");
+        }
+    } finally {
             setLoading(false);
         }
     };

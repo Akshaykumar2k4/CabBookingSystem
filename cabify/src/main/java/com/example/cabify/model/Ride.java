@@ -31,6 +31,9 @@ public class Ride {
     @Enumerated(EnumType.STRING)
     private RideStatus status;
 
+    @OneToOne(mappedBy = "ride", cascade = CascadeType.ALL)
+    private Payment payment;
+
     private LocalDateTime startTime;
     private LocalDateTime endTime;
 }
